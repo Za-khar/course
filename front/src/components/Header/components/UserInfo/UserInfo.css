@@ -1,0 +1,8 @@
+.user-info {
+    position: relative;
+}
+
+.user-info__content {
+    display: flex;
+    align-items: center;
+}
