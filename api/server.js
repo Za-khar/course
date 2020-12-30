@@ -1,20 +1,17 @@
 const express = require('express');
 const config = require('./Config');
+const postsRoutes = require('./routes/postsRoutes');
 
 const app = express();
 const port = config.get('PORT', 5000);
 const host = config.get('HOST', 'localcost');
 
-app.get('/', (req, res) => {
-    res.send('Good!');
-});
+app.use(express.json())
 
-app.get('/:name', (req, res) => {
-    res.send(`Hello ${req.params.name}!`);
-});
+app.use('/posts', postsRoutes);
 
 app.use((err, req, res, next) => {
-    res.status(502).send('502 Server Error');
+    res.status(500).send('500 Server Error');
 });
 
 app.use((req, res) => {
