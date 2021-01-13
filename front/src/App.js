@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import HomePage from './containers/HomePage';
+import UserPage from './containers/UserPage';
 
 function App() {
   return (
-    <HomePage></HomePage>
+    <UserPage></UserPage>
   );
 }
 

@@ -1,0 +1,10 @@
+.profile-form{
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin-top: 30px;
+}
+.profile-form__input{
+    margin-bottom: 10px;
+    height: 30px;
+}
