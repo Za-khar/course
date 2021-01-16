@@ -1,6 +1,6 @@
 import React from 'react';
 import './UserName.css';
-import PropTypes from 'prop-types';
+import userNameType from '../../../../PropTypes/userName';
 
 function UserName({username}) {
     return (
@@ -8,13 +8,8 @@ function UserName({username}) {
     );
 }
 
-const objectUsername = PropTypes.shape({
-    firstName: PropTypes.string.isRequired,
-    secondName: PropTypes.string.isRequired
-});
-
 UserName.propTypes = {
-    username: objectUsername,
+    username: userNameType,
 }
 
 export default UserName;

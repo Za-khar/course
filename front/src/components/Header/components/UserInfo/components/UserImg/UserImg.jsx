@@ -4,7 +4,7 @@ import './UserImg.css';
 
 function UserImg() {
     return(
-        <img className="user__img" src={userPicture} alt=""></img>
+        <img className="user__img" src={userPicture} alt=""/>
     );
 }
 

@@ -8,7 +8,7 @@ function MyProfile({setUsername}){
     return(
         <div className="profile">
             <ErrorBoundary>
-                <Form setUsername={setUsername}></Form>
+                <Form setUsername={setUsername}/>
             </ErrorBoundary>
         </div>
     );

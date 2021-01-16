@@ -4,7 +4,7 @@ import UserPage from './containers/UserPage';
 
 function App() {
   return (
-    <UserPage></UserPage>
+    <UserPage/>
   );
 }
 

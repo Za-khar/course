@@ -3,7 +3,7 @@ import UserPage from '../components/UserPage/UserPage';
 
 function UserPageContainer() {
     return (
-        <UserPage userData={userData}></UserPage>
+        <UserPage userData={userData}/>
     );
 }
 

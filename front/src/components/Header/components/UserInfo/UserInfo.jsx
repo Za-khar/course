@@ -4,31 +4,28 @@ import UserName from './components/UserName/UserName';
 import Menu from './components/Menu/Menu';
 import './UserInfo.css';
 import PropTypes from 'prop-types';
+import userNameType from '../../PropTypes/userName';
 
-function UserInfo({clickProfile, username}) {
+function UserInfo({clickProfile, username, setUsername}) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
         <div className="user-info" onClick={() => setIsOpen(!isOpen)}>
             <div className="user-info__content">
-                <UserImg></UserImg>
-                <UserName username={username}></UserName>
+                <UserImg/>
+                <UserName username={username}/>
             </div>
             {
-                isOpen && <Menu  clickProfile={clickProfile}></Menu>
+                isOpen && <Menu  clickProfile={clickProfile} setUsername={setUsername}/>
             }
         </div>
     );
 }
 
-const objectUsername = PropTypes.shape({
-    firstName: PropTypes.string.isRequired,
-    secondName: PropTypes.string.isRequired
-});
-
 UserInfo.propTypes = {
     clickProfile: PropTypes.func.isRequired,
-    username: objectUsername,
+    username: userNameType,
+    setUsername: PropTypes.func.isRequired,
 }
 
 export default UserInfo;
