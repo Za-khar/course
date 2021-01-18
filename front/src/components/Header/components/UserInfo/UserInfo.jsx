@@ -6,7 +6,7 @@ import './UserInfo.css';
 import PropTypes from 'prop-types';
 import userNameType from '../../PropTypes/userName';
 
-function UserInfo({clickProfile, username, setUsername}) {
+function UserInfo({clickProfile, username}) {
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
@@ -16,7 +16,7 @@ function UserInfo({clickProfile, username, setUsername}) {
                 <UserName username={username}/>
             </div>
             {
-                isOpen && <Menu  clickProfile={clickProfile} setUsername={setUsername}/>
+                isOpen && <Menu clickProfile={clickProfile}/>
             }
         </div>
     );
@@ -25,7 +25,6 @@ function UserInfo({clickProfile, username, setUsername}) {
 UserInfo.propTypes = {
     clickProfile: PropTypes.func.isRequired,
     username: userNameType,
-    setUsername: PropTypes.func.isRequired,
 }
 
 export default UserInfo;

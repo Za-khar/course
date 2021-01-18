@@ -1,11 +1,11 @@
 import React from 'react';
 import './MenuItem.css';
 import PropTypes from 'prop-types';
-import MyProfileContainer from '../../../../../../UserContainers/MyProfile/MyProfile';
 
-function MenuItem( {text, clickMenuItem, setUsername} ) {
+
+function MenuItem( {text, clickMenuItem} ) {
     return(
-        <li className="menu__item" onClick={() => clickMenuItem(<MyProfileContainer setUsername={setUsername}/>)}>
+        <li className="menu__item" onClick={clickMenuItem} name="my_profile_button">
             {text}
         </li>
     );
@@ -13,8 +13,7 @@ function MenuItem( {text, clickMenuItem, setUsername} ) {
 
 MenuItem.propTypes = {
     text: PropTypes.string.isRequired,
-    clickMenuItem: PropTypes.func.isRequired,
-    setUsername: PropTypes.func.isRequired,
+    clickMenuItem: PropTypes.func,
 }
 
 export default MenuItem;
