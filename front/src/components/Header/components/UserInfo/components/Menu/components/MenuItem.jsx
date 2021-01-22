@@ -1,12 +1,19 @@
 import React from 'react';
 import './MenuItem.css';
+import PropTypes from 'prop-types';
 
-function Menu( {text, link} ) {
+
+function MenuItem( {text, clickMenuItem} ) {
     return(
-        <li className="menu__item">
-            <a className="menu_link" href={link}>{text}</a>
+        <li className="menu__item" onClick={clickMenuItem} name="my_profile_button">
+            {text}
         </li>
     );
 }
 
-export default Menu;
+MenuItem.propTypes = {
+    text: PropTypes.string.isRequired,
+    clickMenuItem: PropTypes.func,
+}
+
+export default MenuItem;

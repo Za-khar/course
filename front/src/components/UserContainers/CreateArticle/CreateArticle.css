@@ -1,0 +1,7 @@
+.create-article {
+    width: 400px;
+    height: 400px;
+    background-color: rgb(8, 33, 41);
+    margin: auto;
+    border-radius: 5%;
+}
