@@ -6,6 +6,7 @@
     background-color: rgb(28, 185, 28);
     color: white;
     font-size: medium;
+    cursor: pointer;
 }
 
 .add_article__button:hover{
