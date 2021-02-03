@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 class Config {
-    get(param, defVal) {
+    get(param, defVal=undefined) {
         if(process.env[param]) {
             return process.env[param];
         }

@@ -1,13 +1,20 @@
 const express = require('express');
 const config = require('./Config');
+
 const postsRoutes = require('./routes/postsRoutes');
+const authRoutes = require('./routes/authRoutes');
+
+const authMiddleware = require('./middleware//auth.middleware');
 
 const app = express();
 const port = config.get('PORT', 5000);
 const host = config.get('HOST', 'localcost');
 
-app.use(express.json())
+app.use(express.json());
 
+app.use(authMiddleware);
+
+app.use('/auth', authRoutes);
 app.use('/posts', postsRoutes);
 
 app.use((err, req, res, next) => {
