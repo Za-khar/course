@@ -5,7 +5,7 @@ class PostsController {
     
     async createPost(req, res) {
         const {title, content} = req.body;
-        const newPost = await db(PostsController.tableName).insert({title: title, content: content}).returning('*');
+        const newPost = await db(PostsController.tableName).insert({title: title, content: content, userID: req.user.id}).returning('*');
         res.json(newPost);
     }
 
