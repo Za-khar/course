@@ -13,7 +13,7 @@ router.get('/login', (req, res) => {
 
 router.post('/registration',
     [
-        check('login', 'Uncorrect email').isEmail(),
+        check('email', 'Uncorrect email').isEmail(),
         check('password','Password must be longer than 6 and shorter than 20').isLength({min: 6, max: 12}),
     ],
     async function (req, res) {
@@ -24,17 +24,17 @@ router.post('/registration',
             return res.status(400).json({message: 'Uncorrect request', errors});
         }
 
-        const {login, password} = req.body;
+        const {email, password} = req.body;
 
-        const candidate = await User.findByLogin(login);
+        const candidate = await User.findByLogin(email);
 
         if(candidate){
-            return res.status(400).json({message: `User with username ${login} already exist`});
+            return res.status(400).json({message: `User with username ${email} already exist`});
         }
 
         const hashPassword = await bcrypt.hash(password, 4);
 
-        const newUser = (await User.saveUser({login, hashPassword}))[0];
+        const newUser = (await User.saveUser({email, hashPassword}))[0];
 
         const emailToken = jwt.sign({id: newUser.id}, config.get('MAIL_SECRET'), {expiresIn: '1h'});
 
@@ -42,20 +42,19 @@ router.post('/registration',
 
         const message = {
             from: config.get('MAIL_ADDRESS'),
-            to: login,
+            to: email,
             subject: 'Confirm Email',
             html: `
             <p>Please, click this link to confirm your email:</p>
             <a href="${url}">${url}</a>
             `,
           }
-      
           mailer(message);
 
         return res.json({
             newUser: {
                 id: newUser.id,
-                login: newUser.email,
+                email: newUser.email,
             },
             message: 'You are registered! Verify your email!'
         });
@@ -76,7 +75,7 @@ router.get('/auth', async function(req, res) {
             token,
             user: {
                 id: user.id,
-                login: user.email,
+                email: user.email,
             }
         });
 
@@ -88,9 +87,9 @@ router.get('/auth', async function(req, res) {
 
 router.post('/login', async function(req, res) {
     try{
-        const {login, password} = req.body;
+        const {email, password} = req.body;
 
-        const user = await User.findByLogin(login);
+        const user = await User.findByLogin(email);
 
         if(!user){
             return res.status(404).json({message: 'User not found'});
@@ -112,7 +111,7 @@ router.post('/login', async function(req, res) {
             token,
             user: {
                 id: user.id,
-                login: user.email,
+                email: user.email,
             }
         });
     } catch(e) {
@@ -125,9 +124,9 @@ router.get('/confirmation/:token', async (req, res) => {
     try{
         const {id} = jwt.verify(req.params.token, config.get('MAIL_SECRET'));
 
-        const isActive = await User.checkActive(id);
+        const { active } = await User.checkActive(id);
 
-        if(isActive){
+        if(active){
             return res.status(400).json({message: 'User is activated'});
         }
         

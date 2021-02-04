@@ -3,16 +3,16 @@ const db = require('../services/db');
 class User {
   static tableName = 'users';
 
-  static async findByLogin(login) {
-    return db.select('*').from(User.tableName).where('email', login).first();
+  static async findByLogin(email) {
+    return db.select('*').from(User.tableName).where('email', email).first();
   }
 
-  static async saveUser(user) {
-      return db(User.tableName).insert({email: user.login, password: user.hashPassword}).returning('*');
+  static async saveUser({email, hashPassword}) {
+      return db(User.tableName).insert({email: email, password: hashPassword}).returning('*');
   }
 
-  static async checkActive(){
-      return db.select('active').from(User.tableName);
+  static async checkActive(id){
+      return db.select('active').from(User.tableName).where('id', id).first();
   }
 
   static async findOne(id) {
@@ -21,7 +21,7 @@ class User {
 
   static async activate(id){
     return db(User.tableName).where('id', id).update({active: true}).returning('*');
-}
+  }
 }
 
 module.exports = User;
