@@ -7,8 +7,8 @@ class User {
     return db.select('*').from(User.tableName).where('email', email).first();
   }
 
-  static async saveUser({email, hashPassword}) {
-      return db(User.tableName).insert({email: email, password: hashPassword}).returning('*');
+  static async saveUser({email, hashPassword, userRole}) {
+      return db(User.tableName).insert({email: email, password: hashPassword, role: userRole}).returning('*');
   }
 
   static async checkActive(id){
@@ -21,6 +21,10 @@ class User {
 
   static async activate(id){
     return db(User.tableName).where('id', id).update({active: true}).returning('*');
+  }
+
+  static async getRoleByID(id){
+    return db.select('role').from(User.tableName).where('id', id).first();
   }
 }
 

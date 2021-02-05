@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+const UserRoles = {
+    user: ['updateOwnPost', 'deleteOwnPost'],
+    administrator: ['updateAnyPost', 'deleteAnyPost', 'updateOwnPost', 'deleteOwnPost'],  
+}
+
 class Config {
     get(param, defVal=undefined) {
         if(process.env[param]) {
@@ -7,6 +12,10 @@ class Config {
         }
         
         return defVal;
+    }
+
+    getPermissionsByRole(param){
+        return UserRoles[param];
     }
 }
 
