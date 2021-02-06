@@ -1,20 +1,16 @@
 import React from 'react';
 import './Menu.css';
 import MenuItem from './components/MenuItem';
-import PropTypes from 'prop-types';
+import {useRouteMatch} from 'react-router-dom';
 
-function Menu({clickProfile}) {
-    
+function Menu() {
+    const match = useRouteMatch();
     return(
-        <ul className="menu">
-            <MenuItem clickMenuItem={clickProfile} text={'Profile'}/>
-            <MenuItem text={'LogOut'}/>
-        </ul>
+        <div className="menu">
+            <MenuItem text={'Profile'} path={`${match.url}/profile`}/>
+            <MenuItem text={'LogOut'} path={`/`}/>
+        </div>
     );
-}
-
-Menu.propTypes = {
-    clickProfile: PropTypes.func.isRequired,
 }
 
 export default Menu;

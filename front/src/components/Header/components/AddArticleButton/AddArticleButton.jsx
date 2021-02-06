@@ -1,15 +1,10 @@
 import React from 'react';
 import './AddArticleButton.css';
-import PropTypes from 'prop-types';
 
-function AddArticleButton({clickAddArticleButton}) {
+function AddArticleButton() {
     return (
-        <button onClick={clickAddArticleButton} className="add_article__button" name="add_article_button">Add article</button>
+        <span className="add_article__button">Add article</span>
     );
-}
-
-AddArticleButton.propTypes = {
-    clickAddArticleButton: PropTypes.func.isRequired,
 }
 
 export default AddArticleButton;

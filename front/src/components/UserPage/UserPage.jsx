@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import Header from '../Header/Header';
-import CreateArticleContainer from '../UserContainers/CreateArticle/CreateArticle';
 import Container from '../../containers/Container';
 import userDataType from './PropTypes/userDataType';
+import {Switch, Route, useRouteMatch} from 'react-router-dom';
+
+import ArticlesContainer from '../UserContainers/ArticlesPage/ArticlesPage';
+import CreateArticleContainer from '../UserContainers/CreateArticle/CreateArticle';
+import MyProfileContainer from '../UserContainers/MyProfile/MyProfile';
 
 function UserPage({userData}) {
-    const [container, setContainer] = useState(<CreateArticleContainer/>);
     const [username, setUsername] = useState({firstName: '', secondName: ''});
+    const match = useRouteMatch();
 
     return (
         <>
-            <Header handleContainer={setContainer} username={username} setUsername={setUsername}/>
-            <Container>{container}</Container>           
+            <Header username={username}/>
+            <Container>
+                <Switch>
+                    <Route path={`${match.url}`} exact component={ArticlesContainer}/>
+                    <Route path={`${match.url}/create-article`} exact component={CreateArticleContainer}/>
+                    <Route path={`${match.url}/profile`} exact render={()=> <MyProfileContainer setUsername={setUsername}/>}/>
+                </Switch>
+            </Container>           
         </>
     );
 }

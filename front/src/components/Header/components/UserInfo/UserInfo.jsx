@@ -6,24 +6,27 @@ import './UserInfo.css';
 import PropTypes from 'prop-types';
 import userNameType from '../../PropTypes/userName';
 
-function UserInfo({clickProfile, username}) {
+function UserInfo({username}) {
     const [isOpen, setIsOpen] = React.useState(false);
 
+    const handleClick = () => {
+        setIsOpen(!isOpen);
+    }
+
     return (
-        <div className="user-info" onClick={() => setIsOpen(!isOpen)}>
+        <div className="user-info" onClick={handleClick}>
             <div className="user-info__content">
                 <UserImg/>
                 <UserName username={username}/>
             </div>
             {
-                isOpen && <Menu clickProfile={clickProfile}/>
+                isOpen && <Menu/>
             }
         </div>
     );
 }
 
 UserInfo.propTypes = {
-    clickProfile: PropTypes.func.isRequired,
     username: userNameType,
 }
 

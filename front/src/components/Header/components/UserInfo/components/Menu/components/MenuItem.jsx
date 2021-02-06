@@ -1,19 +1,19 @@
 import React from 'react';
 import './MenuItem.css';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
-
-function MenuItem( {text, clickMenuItem} ) {
+function MenuItem( {text, path} ) {
     return(
-        <li className="menu__item" onClick={clickMenuItem} name="my_profile_button">
+        <Link to={path} className="menu__item">
             {text}
-        </li>
+        </Link>
     );
 }
 
 MenuItem.propTypes = {
     text: PropTypes.string.isRequired,
-    clickMenuItem: PropTypes.func,
+    path: PropTypes.string.isRequired,
 }
 
 export default MenuItem;

@@ -1,5 +1,6 @@
 .user-info {
     position: relative;
+    cursor: pointer;
 }
 
 .user-info__content {
