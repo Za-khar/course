@@ -5,13 +5,13 @@ const router = express.Router();
 const postsController = require('../controllers/postsController');
 
 const tableName = 'posts';
-const creatorID = 'userID';
+const column = 'userID';
 const columnIDName = 'id';
 
 router.get('/', postsController.getPosts);
 router.get('/:id', postsController.getOnePost);
 router.post('/', [checkAuthorized], postsController.createPost);
-router.put('/:id', [checkAuthorized, checkAccess(tableName, creatorID, columnIDName)], postsController.updatePost);
-router.delete('/:id', [checkAuthorized, checkAccess(tableName, creatorID, columnIDName)], postsController.deletePost);
+router.put('/:id', [checkAuthorized, checkAccess([{permission: 'updateAnyPost'}, {permission: 'updateOwnPost', own: {table: tableName, column: column, columnIDName: columnIDName}}])], postsController.updatePost);
+router.delete('/:id', [checkAuthorized, checkAccess([{permission: 'deleteAnyPost'}, {permission: 'deleteOwnPost', own: {table: tableName, column: column, columnIDName: columnIDName}}])], postsController.deletePost);
 
 module.exports = router;

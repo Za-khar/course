@@ -34,7 +34,9 @@ router.post('/registration',
 
         const hashPassword = await bcrypt.hash(password, 4);
 
-        const newUser = (await User.saveUser({email, hashPassword}))[0];
+        const userRole = 'user';
+        
+        const newUser = (await User.saveUser({email, hashPassword, userRole}))[0];
 
         const emailToken = jwt.sign({id: newUser.id}, config.get('MAIL_SECRET'), {expiresIn: '1h'});
 
