@@ -49,6 +49,7 @@
     background-color: white;
     text-decoration: none;
     color: black;
+    cursor: pointer;
 }
 
 .login-form__txt{

@@ -1,4 +1,8 @@
 const db = require('../services/db');
+const config = require('../Config');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 class PostsController {
     static tableName = 'posts';

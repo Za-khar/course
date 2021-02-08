@@ -1,5 +1,6 @@
 const db = require('../services/db');
 const config = require('../Config');
+const axios = require('axios');
 
 function checkAuthorized(req, res, next) {
   if (req.user) {
@@ -38,7 +39,41 @@ function checkAccess(params){
   }
 }
 
+function checkSocialAccount(url){
+  return async function(req, res, next){
+    const { _token: {accessToken}, _provider}  = req.body;
+
+    axios
+    .get(url, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      responseType: 'json',
+    })
+    .then(async (response) => {
+  
+      const {data: {email, id, sub}} = response;
+
+      if(id){
+        req.data = {email, id, provider: _provider};
+      }
+      if(sub){
+        req.data = {email, id: sub, provider: _provider};
+        
+      }    
+
+      next();
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.status(401).send({message: 'Access denied'});
+    });
+  }
+}
+
   module.exports = {
     checkAuthorized,
     checkAccess,
+    checkSocialAccount,
   };

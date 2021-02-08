@@ -7,6 +7,13 @@ const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
 const mailer = require('../services/nodemailer');
 
+const authController = require('../controllers/authController');
+
+const {checkSocialAccount} = require('../middleware/acl');
+
+const facebookUrl = 'https://graph.facebook.com/me?fields=name,id,email';
+const googleUrl = 'https://www.googleapis.com/oauth2/v3/userinfo';
+
 router.get('/login', (req, res) => {
     res.send('Good!');
 });
@@ -142,5 +149,9 @@ router.get('/confirmation/:token', async (req, res) => {
     }
 
 });
+
+router.post('/social/google', [checkSocialAccount(googleUrl)], authController.socialLogin);
+
+router.post('/social/facebook', [checkSocialAccount(facebookUrl)], authController.socialLogin);
 
 module.exports = router;

@@ -12,6 +12,13 @@ const host = config.get('HOST', 'localcost');
 
 app.use(express.json());
 
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, PATCH, POST, DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    next();
+});
+
 app.use(authMiddleware);
 
 app.use('/auth', authRoutes);

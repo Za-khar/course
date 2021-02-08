@@ -14,7 +14,9 @@ module.exports = async (req, res, next) => {
     const decoded = jwt.verify(token, config.get('SECRET_KEY'));
 
     req.user = decoded;
+    
     const { role } = await User.getRoleByID(req.user.id);
+    
     req.user.permissions = config.getPermissionsByRole(role);;
   }
 
