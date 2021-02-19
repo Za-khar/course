@@ -6,13 +6,10 @@ import PropTypes from 'prop-types';
 import { objectPost } from '../../Article/PropTypes/postType';
 
 function PostsList({postsList}){
-    console.log(postsList);
     return(
         <div className="articles-block">
             {
-                postsList.map((post) => {
-                    return <Article key={post.id} postData={post}/>
-                })
+                postsList.map(post => <Article key={post.id} postData={post}/>)
             }
         </div>
     );
