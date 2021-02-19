@@ -4,7 +4,7 @@ import Container from '../../containers/Container';
 import userDataType from './PropTypes/userDataType';
 import {Switch, Route, useRouteMatch} from 'react-router-dom';
 
-import ArticlesContainer from '../UserContainers/ArticlesPage/ArticlesPage';
+import PostsListContainer from '../../containers/Posts/PostsList';
 import CreateArticleContainer from '../UserContainers/CreateArticle/CreateArticle';
 import MyProfileContainer from '../UserContainers/MyProfile/MyProfile';
 
@@ -17,7 +17,7 @@ function UserPage({userData}) {
             <Header username={username}/>
             <Container>
                 <Switch>
-                    <Route path={`${match.url}`} exact component={ArticlesContainer}/>
+                    <Route path={`${match.url}`} exact component={PostsListContainer}/>
                     <Route path={`${match.url}/create-article`} exact component={CreateArticleContainer}/>
                     <Route path={`${match.url}/profile`} exact render={()=> <MyProfileContainer setUsername={setUsername}/>}/>
                 </Switch>
