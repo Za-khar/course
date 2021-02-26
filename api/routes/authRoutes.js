@@ -7,6 +7,13 @@ const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
 const mailer = require('../services/nodemailer');
 
+const authController = require('../controllers/authController');
+
+const {checkSocialAccount} = require('../middleware/acl');
+
+const facebookUrl = 'https://graph.facebook.com/me?fields=name,id,email';
+const googleUrl = 'https://www.googleapis.com/oauth2/v3/userinfo';
+
 router.get('/login', (req, res) => {
     res.send('Good!');
 });
@@ -29,7 +36,7 @@ router.post('/registration',
         const candidate = await User.findByLogin(email);
 
         if(candidate){
-            return res.status(400).json({message: `User with username ${email} already exist`});
+            return res.status(401).json({message: `User with username ${email} already exist`});
         }
 
         const hashPassword = await bcrypt.hash(password, 4);
@@ -63,7 +70,7 @@ router.post('/registration',
 
     } catch(e) {
         console.log(e);
-        res.send({message: 'Server error'});
+        res.status(500).send({message: 'Server error'});
     }
 });
 
@@ -98,7 +105,7 @@ router.post('/login', async function(req, res) {
         }
 
         if (!user.active) {
-            return res.status(400).json('User not verify');
+            return res.status(401).json('User not verify');
           }
 
         const isPassValid = bcrypt.compareSync(password, user.password);
@@ -118,7 +125,7 @@ router.post('/login', async function(req, res) {
         });
     } catch(e) {
         console.log(e);
-        res.send({message: 'Server error'});
+        res.status(500).send({message: 'Server error'});
     }
 });
 
@@ -138,9 +145,13 @@ router.get('/confirmation/:token', async (req, res) => {
 
     } catch(e){
         console.log(e);
-        res.send('error');
+        res.status(500).send('server error');
     }
 
 });
+
+router.post('/social/google', [checkSocialAccount(googleUrl)], authController.socialLogin);
+
+router.post('/social/facebook', [checkSocialAccount(facebookUrl)], authController.socialLogin);
 
 module.exports = router;

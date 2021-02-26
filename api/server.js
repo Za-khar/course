@@ -1,6 +1,7 @@
 const express = require('express');
 const config = require('./Config');
-var cors = require('cors');
+
+const cors = require('cors');
 
 const postsRoutes = require('./routes/postsRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -14,7 +15,7 @@ const host = config.get('HOST', 'localcost');
 app.use(express.json());
 
 const corsOptions = {
-    origin: 'http://localhost:3001',
+    origin: `http://${config.get('CLIENT_HOST')}:${config.get('CLIENT_PORT')}`,
     optionsSuccessStatus: 200 
 }
 

@@ -3,7 +3,6 @@ import UserImg from './components/UserImg/UserImg';
 import UserName from './components/UserName/UserName';
 import Menu from './components/Menu/Menu';
 import './UserInfo.css';
-import PropTypes from 'prop-types';
 import userNameType from '../../PropTypes/userName';
 
 function UserInfo({username}) {

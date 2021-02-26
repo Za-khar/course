@@ -4,12 +4,57 @@ import Form from './components/Form';
 import PropTypes from 'prop-types';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
-function MyProfile({setUsername}){
-    return(
-        <div className="profile">
+import { socialAuth } from '../../GuestPage/components/LoginForm/hooks/socialAuth';
+
+import SocialButton from '../../GuestPage/components/LoginForm/SocialButton';
+
+import config from '../../../Config.json';
+
+function MyProfile({ setUsername }) {
+
+    const handleSocialLogin = async(user) => {
+        try{
+            const res = await socialAuth(user);
+            console.log(res);
+        }
+        catch (e) {
+            console.log(e);
+        }  
+    };
+
+    const handleSocialLoginFailure = (err) => {
+        window.location.reload();
+        console.error(err);
+    };
+
+    return (
+        <div className='profile'>
             <ErrorBoundary>
-                <Form setUsername={setUsername}/>
+                <Form setUsername={setUsername} />
             </ErrorBoundary>
+
+            <div className="social-login">
+                <span>Link account with facebook account</span>
+                <SocialButton
+                    className="facebook-login"
+                    provider='facebook'
+                    appId={config.FACEBOOK_CLIENT_ID}
+                    onLoginSuccess={handleSocialLogin}
+                    onLoginFailure={handleSocialLoginFailure}
+                >
+                    Facebook
+                     </SocialButton>
+                <span>Link account with google account</span>
+                <SocialButton
+                    className="google-login"
+                    provider='google'
+                    appId={config.GOOGLE_CLIENT_ID}
+                    onLoginSuccess={handleSocialLogin}
+                    onLoginFailure={handleSocialLoginFailure}
+                >
+                    Google
+                     </SocialButton>
+            </div>
         </div>
     );
 }

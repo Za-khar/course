@@ -4,8 +4,8 @@ const router = express.Router();
 
 const postsController = require('../controllers/postsController');
 
-const tableName = 'posts';
-const column = 'userID';
+const tableName = 'Posts';
+const column = 'user_id';
 const columnIDName = 'id';
 
 router.get('/', postsController.getPosts);

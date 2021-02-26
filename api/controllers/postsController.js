@@ -1,11 +1,16 @@
 const db = require('../services/db');
+const config = require('../Config');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 class PostsController {
-    static tableName = 'posts';
+    static tableName = 'Posts';
     
     async createPost(req, res) {
         const {title, content} = req.body;
-        const newPost = await db(PostsController.tableName).insert({title: title, content: content, userID: req.user.id}).returning('*');
+        const date = new Date();
+        const newPost = await db(PostsController.tableName).insert({title: title, content: content, user_id: req.user.id, creation_date: date, edit_date: date}).returning('*');
         res.json(newPost);
     }
 
