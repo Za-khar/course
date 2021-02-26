@@ -24,6 +24,6 @@ module.exports = async (req, res, next) => {
 
   } catch(e){
     console.log(e);
-    res.send({message: 'Server error'});
+    return res.status(401).send({message: 'Access denied'});
   }
 }

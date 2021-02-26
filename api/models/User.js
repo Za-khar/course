@@ -1,16 +1,16 @@
 const db = require('../services/db');
 
 class User {
-  static userTableName = 'users';
-  static socialTableName = 'social_account';
-  static providerTable = 'providers';
+  static userTableName = 'Users';
+  static socialTableName = 'Social_accounts';
 
   static async findByLogin(email) {
     return db.select('*').from(User.userTableName).where('email', email).first();
   }
 
   static async saveUser({email, hashPassword, userRole}) {
-      return db(User.userTableName).insert({email: email, password: hashPassword, role: userRole}).returning('*');
+    const date = new Date();
+      return db(User.userTableName).insert({email: email, password: hashPassword, role: userRole, registration_date: date}).returning('*');
   }
 
   static async checkActive(id){
@@ -30,33 +30,25 @@ class User {
   }
 
   static async getUserBySocialAccountID(socialID){
-    const userSoc = await db.select('*').from(User.socialTableName).where('accountID', socialID).first();
+    const userSoc = await db.select('*').from(User.socialTableName).where('id', socialID).first();
 
     if(userSoc){
-      return db.select('*').from(User.userTableName).where('id', userSoc.userID).first();
+      return db.select('*').from(User.userTableName).where('id', userSoc.user_id).first();
     }
 
     return undefined;
   }
 
   static async saveSocialAccout({accountID, socialAccoutEmail, userID, provider}) {
-    const {id: providerID} = await db.select('id').from(User.providerTable).where('providerName', provider).first();
-    return db(User.socialTableName).insert({accountID: accountID, socialAccoutEmail: socialAccoutEmail, userID: userID, providerID: providerID}).returning('*');
+    return db(User.socialTableName).insert({id: accountID, social_email: socialAccoutEmail, user_id: userID, provider: provider}).returning('*');
   }
 
   static async getSocialAccountByID({id, provider}){
-    const {id: providerID} = await db.select('id').from(User.providerTable).where('providerName', provider).first();
-    return db.select('*').from(User.socialTableName).where('accountID', id).andWhere('providerID', providerID).first();
+    return db.select('*').from(User.socialTableName).where('id', id).andWhere('provider', provider).first();
   }
 
   static async getSocialAccountByUserID({id, provider}){
-    const {id: providerID} = await db.select('id').from(User.providerTable).where('providerName', provider).first();
-    return db.select('*').from(User.socialTableName).where('userID', id).andWhere('providerID', providerID).first();
-  }
-
-  static async deleteSocialAccountByUserID({id, provider}){
-    const {id: providerID} = await db.select('id').from(User.providerTable).where('providerName', provider).first();
-    return db(User.userTableName).where('userID', id).endWhere('providerID', providerID).del(['id', 'userID', provider]);
+    return db.select('*').from(User.socialTableName).where('user_id', id).andWhere('provider', provider).first();
   }
 }
 

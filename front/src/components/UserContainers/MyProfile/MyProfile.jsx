@@ -4,32 +4,22 @@ import Form from './components/Form';
 import PropTypes from 'prop-types';
 import ErrorBoundary from '../../ErrorBoundary/ErrorBoundary';
 
+import { socialAuth } from '../../GuestPage/components/LoginForm/hooks/socialAuth';
+
 import SocialButton from '../../GuestPage/components/LoginForm/SocialButton';
 
-import axios from 'axios';
 import config from '../../../Config.json';
 
 function MyProfile({ setUsername }) {
-    const handleSocialLogin = (user) => {
-        console.log(user);
-        if (user._provider === 'google') {
-            axios.post('http://localhost:3000/auth/social/google', user)
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+
+    const handleSocialLogin = async(user) => {
+        try{
+            const res = await socialAuth(user);
+            console.log(res);
         }
-        if (user._provider === 'facebook') {
-            axios.post('http://localhost:3000/auth/social/facebook', user)
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        }
+        catch (e) {
+            console.log(e);
+        }  
     };
 
     const handleSocialLoginFailure = (err) => {

@@ -24,7 +24,7 @@ class AuthController {
 
 
                 await User.saveSocialAccout({ accountID: id, socialAccoutEmail: email, userID: req.user.id, provider });
-                return res.status(401).send({ message: `Account linked successful` });
+                return res.send({ message: `Account linked successful` });
             }
 
             const user = await User.getUserBySocialAccountID(id);
@@ -63,7 +63,7 @@ class AuthController {
                         });
                     }
 
-                    res.send({ message: `Impossible to link account because user with this email is already associated with ${provider} social account` });
+                    return res.status(401).send({ message: `Impossible to link account because user with this email is already associated with ${provider} social account` });
                 }
 
                 // registration new user
@@ -87,12 +87,12 @@ class AuthController {
                     });
                 }
 
-                res.send({ message: 'Impossible to create account because email already linked' });
+                return res.status(401).send({ message: 'Impossible to create account because email already linked' });
             }
         }
         catch (err) {
             console.log(err);
-            res.send({ message: 'Server error' });
+            return res.status(500).send({ message: 'Server error' });
         }
     }
 }

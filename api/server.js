@@ -1,5 +1,6 @@
 const express = require('express');
 const config = require('./Config');
+const cors = require('cors');
 
 const postsRoutes = require('./routes/postsRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -12,12 +13,12 @@ const host = config.get('HOST', 'localcost');
 
 app.use(express.json());
 
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, PUT, PATCH, POST, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
-    next();
-});
+const corsOptions = {
+    origin: `http://${config.get('CLIENT_HOST')}:${config.get('CLIENT_PORT')}`,
+    optionsSuccessStatus: 200 
+}
+
+app.use(cors(corsOptions));
 
 app.use(authMiddleware);
 

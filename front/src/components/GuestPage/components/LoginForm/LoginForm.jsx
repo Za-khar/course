@@ -2,8 +2,9 @@ import React from 'react';
 import './LoginForm.css';
 import { useHistory } from 'react-router-dom';
 import SocialButton from './SocialButton';
-import axios from 'axios';
 import config from '../../../../Config.json';
+
+import { socialAuth } from './hooks/socialAuth';
 
 function LoginForm({setValidate}) {
     let history = useHistory();
@@ -14,28 +15,16 @@ function LoginForm({setValidate}) {
         history.push('/home');
     };
 
-    const handleSocialLogin = (user) => {
+    const handleSocialLogin = async (user) => {
         console.log(user);
-        if (user._provider === 'google') {
-            axios.post('http://localhost:3000/auth/social/google', user)
-                .then((res) => {
-                    console.log(res);
-                    setValidate(true);
-                })
-                .catch((error) => { 
-                    console.log(error);
-                });
+        try{
+            const userData = await socialAuth(user);
+            setValidate(true);
+            console.log(userData);
         }
-        if (user._provider === 'facebook') {
-            axios.post('http://localhost:3000/auth/social/facebook', user)
-                .then((res) => {
-                    console.log(res);
-                    setValidate(true);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        }
+        catch (e) {
+            console.log(e);
+        }        
     };
 
     const handleSocialLoginFailure = (err) => {
