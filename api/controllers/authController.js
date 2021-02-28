@@ -32,7 +32,7 @@ class AuthController {
             if (user) {
                 // Log in with social account
 
-                const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
+                const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '24h' });
 
                 return res.json({
                     token,

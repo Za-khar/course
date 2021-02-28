@@ -1,22 +1,32 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import PostsList from '../../components/UserContainers/PostsList/PostsList';
+import { getPosts } from './hooks/articleRequests';
 
-import {getPosts} from './hooks/getPosts';
+import {
+    useInfiniteQuery,
+} from 'react-query';
 
 function PostsListContainer() {
-    const [posts, setPosts] = useState([]);
+    const { data: response, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
+        'posts',
+        getPosts,
+        {
+            getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+        }
+    );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const getPostsData = async () => {
-        const {data} = await getPosts();
-        setPosts(data);
-    }
+    const pagesData = response?.pages || [];
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(getPostsData, []);
+    const showMore = () => fetchNextPage();
     
-    return(
-        <PostsList postsList={posts}/>
+    return (
+        <PostsList
+            pagesData={pagesData}
+            isFetching={isLoading}
+            showMore={showMore}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+        />
     );
 }
 
