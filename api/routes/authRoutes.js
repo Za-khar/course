@@ -4,12 +4,12 @@ const config = require('../Config');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {check, validationResult} = require('express-validator');
 const mailer = require('../services/nodemailer');
+const validator = require('../middleware/validator');
 
 const authController = require('../controllers/authController');
 
-const {checkSocialAccount} = require('../middleware/acl');
+const { checkSocialAccount } = require('../middleware/acl');
 
 const facebookUrl = 'https://graph.facebook.com/me?fields=name,id,email';
 const googleUrl = 'https://www.googleapis.com/oauth2/v3/userinfo';
@@ -19,66 +19,54 @@ router.get('/login', (req, res) => {
 });
 
 router.post('/registration',
-    [
-        check('email', 'Uncorrect email').isEmail(),
-        check('password','Password must be longer than 6 and shorter than 20').isLength({min: 6, max: 12}),
-    ],
+    validator({
+        email: ['required', 'email', 'unique:Users:email'],
+        password: ['required', 'min:8', 'max:25']
+    }),
     async function (req, res) {
-    try{
-        const errors = validationResult(req);
+        try {
+            const { email, password } = req.body;
 
-        if(!errors.isEmpty()){
-            return res.status(400).json({message: 'Uncorrect request', errors});
-        }
+            const hashPassword = await bcrypt.hash(password, 4);
 
-        const {email, password} = req.body;
+            const userRole = 'user';
 
-        const candidate = await User.findByLogin(email);
+            const newUser = (await User.saveUser({ email, hashPassword, userRole }))[0];
 
-        if(candidate){
-            return res.status(401).json({message: `User with username ${email} already exist`});
-        }
+            const emailToken = jwt.sign({ id: newUser.id }, config.get('MAIL_SECRET'), { expiresIn: '1h' });
 
-        const hashPassword = await bcrypt.hash(password, 4);
+            const url = `http://${config.get('HOST')}:${config.get('PORT')}/auth/confirmation/${emailToken}`;
 
-        const userRole = 'user';
-        
-        const newUser = (await User.saveUser({email, hashPassword, userRole}))[0];
-
-        const emailToken = jwt.sign({id: newUser.id}, config.get('MAIL_SECRET'), {expiresIn: '1h'});
-
-        const url = `http://${config.get('HOST')}:${config.get('PORT')}/auth/confirmation/${emailToken}`;
-
-        const message = {
-            from: config.get('MAIL_ADDRESS'),
-            to: email,
-            subject: 'Confirm Email',
-            html: `
+            const message = {
+                from: config.get('MAIL_ADDRESS'),
+                to: email,
+                subject: 'Confirm Email',
+                html: `
             <p>Please, click this link to confirm your email:</p>
             <a href="${url}">${url}</a>
             `,
-          }
-          mailer(message);
+            }
+            mailer(message);
 
-        return res.json({
-            newUser: {
-                id: newUser.id,
-                email: newUser.email,
-            },
-            message: 'You are registered! Verify your email!'
-        });
+            return res.json({
+                newUser: {
+                    id: newUser.id,
+                    email: newUser.email,
+                },
+                message: 'You are registered! Verify your email!'
+            });
 
-    } catch(e) {
-        console.log(e);
-        res.status(500).send({message: 'Server error'});
-    }
-});
+        } catch (e) {
+            console.log(e);
+            res.status(500).send({ message: 'Server error' });
+        }
+    });
 
-router.get('/auth', async function(req, res) {
-    try{
+router.get('/auth', async function (req, res) {
+    try {
         const user = await User.findOne(req.user.id);
 
-        const token = jwt.sign({id: user.id}, config.get('SECRET_KEY'), {expiresIn: '1h'});
+        const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
         return res.json({
             token,
@@ -88,33 +76,33 @@ router.get('/auth', async function(req, res) {
             }
         });
 
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        res.send({message: 'Server error'});
+        res.send({ message: 'Server error' });
     }
 });
 
-router.post('/login', async function(req, res) {
-    try{
-        const {email, password} = req.body;
+router.post('/login', async function (req, res) {
+    try {
+        const { email, password } = req.body;
 
         const user = await User.findByLogin(email);
 
-        if(!user){
-            return res.status(404).json({message: 'User not found'});
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
         if (!user.active) {
             return res.status(401).json('User not verify');
-          }
+        }
 
         const isPassValid = bcrypt.compareSync(password, user.password);
 
-        if(!isPassValid){
-            return res.status(400).json({message: 'Invalid password'});
+        if (!isPassValid) {
+            return res.status(400).json({ message: 'Invalid password' });
         }
 
-        const token = jwt.sign({id: user.id}, config.get('SECRET_KEY'), {expiresIn: '1h'});
+        const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
         return res.json({
             token,
@@ -123,27 +111,27 @@ router.post('/login', async function(req, res) {
                 email: user.email,
             }
         });
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        res.status(500).send({message: 'Server error'});
+        res.status(500).send({ message: 'Server error' });
     }
 });
 
 router.get('/confirmation/:token', async (req, res) => {
-    try{
-        const {id} = jwt.verify(req.params.token, config.get('MAIL_SECRET'));
+    try {
+        const { id } = jwt.verify(req.params.token, config.get('MAIL_SECRET'));
 
         const { active } = await User.checkActive(id);
 
-        if(active){
-            return res.status(400).json({message: 'User is activated'});
+        if (active) {
+            return res.status(400).json({ message: 'User is activated' });
         }
-        
-        await User.activate(id);  
-        
+
+        await User.activate(id);
+
         return res.redirect(`http://${config.get('HOST')}:${config.get('PORT')}/auth/login`);
 
-    } catch(e){
+    } catch (e) {
         console.log(e);
         res.status(500).send('server error');
     }
