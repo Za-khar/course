@@ -3,12 +3,11 @@ import './LoginForm.css';
 import { useHistory } from 'react-router-dom';
 import SocialButton from './SocialButton';
 import config from '../../../../Config.json';
-
+import PropTypes from 'prop-types';
 import { socialAuth } from './hooks/socialAuth';
 
-function LoginForm({setValidate}) {
+function LoginForm({ setValidate }) {
     let history = useHistory();
-
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -16,19 +15,19 @@ function LoginForm({setValidate}) {
     };
 
     const handleSocialLogin = async (user) => {
-        console.log(user);
-        try{
+        try {
             const userData = await socialAuth(user);
             setValidate(true);
-            console.log(userData);
+            localStorage.setItem('accessToken', userData.data.token);
+
         }
         catch (e) {
             console.log(e);
-        }        
+        }
     };
 
     const handleSocialLoginFailure = (err) => {
-        window.location.reload(); 
+        window.location.reload();
         console.error(err);
     };
 
@@ -82,6 +81,10 @@ function LoginForm({setValidate}) {
             </form>
         </div>
     );
+}
+
+LoginForm.propTypes = {
+    setValidate: PropTypes.bool,
 }
 
 export default LoginForm;

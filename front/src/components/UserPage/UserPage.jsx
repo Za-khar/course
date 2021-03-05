@@ -2,26 +2,38 @@ import React, { useState } from 'react';
 import Header from '../Header/Header';
 import Container from '../../containers/Container';
 import userDataType from './PropTypes/userDataType';
-import {Switch, Route, useRouteMatch} from 'react-router-dom';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
 import PostsListContainer from '../../containers/Posts/PostsList';
-import CreateArticleContainer from '../UserContainers/CreateArticle/CreateArticle';
+import CreateArticleContainer from '../../containers/Posts/CreateArticleContainer';
 import MyProfileContainer from '../UserContainers/MyProfile/MyProfile';
 
-function UserPage({userData}) {
-    const [username, setUsername] = useState({firstName: '', secondName: ''});
+function UserPage({ userData }) {
+    const [username, setUsername] = useState({ firstName: '', secondName: '' });
     const match = useRouteMatch();
 
     return (
         <>
-            <Header username={username}/>
+            <Header username={username} />
             <Container>
                 <Switch>
-                    <Route path={`${match.url}`} exact component={PostsListContainer}/>
-                    <Route path={`${match.url}/create-article`} exact component={CreateArticleContainer}/>
-                    <Route path={`${match.url}/profile`} exact render={()=> <MyProfileContainer setUsername={setUsername}/>}/>
+                    <Route path={`${match.url}`}
+                        exact
+                        sensitive
+                        strict
+                        component={PostsListContainer} />
+                    <Route path={[`${match.url}/create-article`, `${match.url}/edit-article/:id(\\d+)`]}
+                        exact
+                        sensitive
+                        strict
+                        render={routerProps => <CreateArticleContainer id={routerProps.match.params.id} />} />
+                    <Route path={`${match.url}/profile`}
+                        exact
+                        sensitive
+                        strict
+                        render={() => <MyProfileContainer setUsername={setUsername} />} />
                 </Switch>
-            </Container>           
+            </Container>
         </>
     );
 }
