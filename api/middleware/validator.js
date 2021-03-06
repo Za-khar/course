@@ -42,9 +42,11 @@ module.exports = function validator(validatorSchema) {
                         if (req.body[fieldName]) {
                             const field = await db.select('*').from(params[0]).where(params[1], req.body[fieldName]).first();
                             if (field) {
-                                errors.push({
-                                    [fieldName]: `Field ${fieldName} is already exist`,
-                                });
+                                if (!(params.includes('update') && req.params.id === field[params[3]])) {
+                                    errors.push({
+                                        [fieldName]: `Field ${fieldName} is already exist`,
+                                    });
+                                }
                             }
                         }
                         break;
