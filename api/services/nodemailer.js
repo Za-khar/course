@@ -2,9 +2,7 @@ const nodemailer = require('nodemailer');
 const config = require('../Config');
 
 const transporter = nodemailer.createTransport({
-    host: config.get('MAIL_HOST'),
-    port: config.get('MAIL_PORT'),
-    secure: false,
+    service: 'gmail',
     auth: {
         user: config.get('MAIL_ADDRESS'),
         pass: config.get('MAIL_PASS'),
