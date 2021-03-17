@@ -1,11 +1,25 @@
-import React from 'react';
-import { Formik, Field, Form } from 'formik';
-import './CreateArticle.css';
+import React, { useState } from 'react';
+import { Formik, Form } from 'formik';
 import { PropTypes } from 'prop-types';
 import * as Yup from 'yup';
 import { useHistory } from 'react-router-dom';
 
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from './components/DialogTitle';
+import CustomTextField from './components/CustomTextField';
+import FormLabel from '@material-ui/core/FormLabel';
+import InputLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Box from '@material-ui/core/Box';
+import CustomRadioField from './components/CustomRadioField';
+import useStyles from './CreateArticleStyles';
+
 function CreateArticle({ postData, onSubmit, isCreate }) {
+    const [isOpen, setIsOpen] = useState(true);
+    const classes = useStyles();
     const history = useHistory();
     const { title: currentTitle, content: currentContent, access: currentAccess } = postData;
 
@@ -13,11 +27,11 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
         title: Yup.string()
             .min(1, 'Too Short!')
             .max(30, 'Too Long!')
-            .required('Required very important field'),
+            .required('Required very important field!'),
         content: Yup.string()
             .min(1, 'Too Short!')
             .max(255, 'Too Long!')
-            .required('Required very important field'),
+            .required('Required very important field!'),
         access: Yup.string()
             .oneOf(['all', 'friends', 'me'])
     });
@@ -27,65 +41,93 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
         history.push(`/home`);
     };
 
+    const handleClose = () => {
+        setIsOpen(false);
+        history.push(`/home`);
+    }
+
     return (
-        <div className="create-article">
-            {isCreate ? 'Create article' : 'Edit article'}
-            <Formik
-                enableReinitialize
-                initialValues={{ title: currentTitle, content: currentContent, access: currentAccess }}
-                validationSchema={postsSchema}
-                onSubmit={handleSubmit}
+        <Dialog
+            open={isOpen}
+            onClose={handleClose}
+        >
+            <DialogTitle
+                id="customized-dialog-title"
+                onClose={handleClose}
+                className={classes.dialog_title}
             >
-                {({ errors, touched }) => (
-                    <Form className='create-article__form'>
-                        <div>
-                            <label htmlFor="title">Title</label>
-                            <Field
-                                id="title"
-                                name="title"
-                                placeholder="Enter title..." />
-                            {errors.title && touched.title ? (
-                                <div>{errors.title}</div>
-                            ) : null}
-                        </div>
-                        <div>
-                            <label htmlFor="content">Content</label>
-                            <Field
-                                id="content"
-                                name="content"
-                            >
-                                {({ field }) => (
-                                    <div>
-                                        <textarea type="text" {...field} placeholder="some content" />
-                                    </div>
-                                )}
-                            </Field>
-                            {errors.content && touched.content ? (
-                                <div>{errors.content}</div>
-                            ) : null}
-                        </div>
+                {isCreate ? 'Create article' : 'Edit article'}
+            </DialogTitle>
+            <DialogContent className={classes.dialog_content}>
+                <Formik
+                    enableReinitialize
+                    initialValues={{ title: currentTitle, content: currentContent, access: currentAccess }}
+                    validationSchema={postsSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ errors, touched, values, handleChange }) => (
+                        <Form>
+                            <Box mb={3} className={classes.input}>
+                                <InputLabel>
+                                    Title:
+                                </InputLabel>
+                                <CustomTextField
+                                    id="title"
+                                    name="title"
+                                    label="Enter title..."
+                                    helperText={errors.title}
+                                    fullWidth
+                                />
 
-                        <div id="radio-group">Checked</div>
-                        <div role="group" aria-labelledby="radio-group">
-                            <label>
-                                <Field type="radio" name="access" value="all" />
-                                All
-                            </label>
-                            <label>
-                                <Field type="radio" name="access" value="friends" />
-                                For Friends
-                             </label>
-                            <label>
-                                <Field type="radio" name="access" value="me" />
-                                Only me
-                            </label>
-                        </div>
-
-                        <button type="submit">Submit</button>
-                    </Form>
-                )}
-            </Formik>
-        </div>
+                            </Box>
+                            <Box mb={3} className={classes.input}>
+                                <InputLabel style={{marginBottom: 10}}>
+                                    Content:
+                                </InputLabel>
+                                <CustomTextField
+                                    id="content"
+                                    name="content"
+                                    multiline
+                                    label="Enter content..."
+                                    helperText={errors.content}
+                                    variant="outlined"
+                                    rows={8}
+                                    fullWidth
+                                >
+                                </CustomTextField>
+                            </Box>
+                            <FormLabel component="legend">Access:</FormLabel>
+                            <RadioGroup сolumn aria-label="position" name="position" defaultValue="top" style={{marginBottom: 20}}>
+                                <CustomRadioField
+                                    value="all"
+                                    control={<Radio color="primary" />}
+                                    label="All"
+                                    labelPlacement="end"
+                                    name="access"
+                                />
+                                <CustomRadioField
+                                    value="friends"
+                                    control={<Radio color="primary" />}
+                                    label="For Friends"
+                                    labelPlacement="end"
+                                    name="access"
+                                />
+                                <CustomRadioField
+                                    value="me"
+                                    control={<Radio color="primary" />}
+                                    label="Only me"
+                                    labelPlacement="end"
+                                    name="access"
+                                />
+                            </RadioGroup>
+                            <Button type="submit" variant="contained" color="primary" fullWidth>
+                                Submit
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
+            </DialogContent>
+        </Dialog>
     );
 }
 

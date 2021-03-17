@@ -1,19 +1,30 @@
 import React from 'react';
-import Container from '../../containers/Container';
-import './GuestHeader.css';
-import Logo from '../../components/Header/components/Logo/Logo'
-import LoginButton from './components/LoginButton';
+import { useHistory } from 'react-router-dom';
 
-function GuestHeader () {
-    return(
-        <div className="guest-header">
+import AppBar from '@material-ui/core/AppBar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Toolbar from '@material-ui/core/Toolbar';
+import useStyles from '../Header/HeaderStyles';
+
+function GuestHeader() {
+    const classes = useStyles();
+    const history = useHistory();
+
+    const handleClick = () => history.push("/login");
+
+    return (
+        <AppBar className={classes.root} position="static">
             <Container>
-                <div className="guest-header-block">
-                    <Logo/>
-                    <LoginButton/>
-                </div>
+                <Toolbar className={classes.appBar}>
+                    <Typography variant="h3">
+                        Swiftchat
+                    </Typography>
+                    <Button variant="outlined" color="inherit" onClick={handleClick}>SignUp/SignIn</Button>
+                </Toolbar>
             </Container>
-        </div>
+        </AppBar>
     );
 }
 
