@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import Header from '../Header/Header';
-import Container from '../../containers/Container';
 import userDataType from './PropTypes/userDataType';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
 import PostsListContainer from '../../containers/Posts/PostsList';
 import CreateArticleContainer from '../../containers/Posts/CreateArticleContainer';
 import MyProfileContainer from '../UserContainers/MyProfile/MyProfile';
+import Container from '@material-ui/core/Container';
 
 function UserPage({ userData }) {
     const [username, setUsername] = useState({ firstName: '', secondName: '' });

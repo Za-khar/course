@@ -1,9 +1,0 @@
-.user-info {
-    position: relative;
-    cursor: pointer;
-}
-
-.user-info__content {
-    display: flex;
-    align-items: center;
-}
