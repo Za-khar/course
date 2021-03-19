@@ -8,7 +8,10 @@ export default createMuiTheme({
       dark: '#64dd17',
     },
     text_color: {
-        main: '#212121',
+      main: '#212121',
+    },
+    border_color: {
+      main: '#d3d4d5',
     }
   },
 });

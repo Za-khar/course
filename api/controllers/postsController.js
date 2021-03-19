@@ -11,7 +11,7 @@ class PostsController {
     async createPost(req, res) {
         const { title, content, access } = req.body;
         const date = new Date();
-        const newPost = await db(PostsController.tableName).insert({ title: title, content: content, user_id: req.user.id, creation_date: date, edit_date: date, access: access }).returning('*');
+        const newPost = await db(PostsController.tableName).insert({ title: title, content: content, user_id: req.user.user_id, creation_date: date, edit_date: date, access: access }).returning('*');
         res.json(newPost);
     }
 
@@ -20,8 +20,7 @@ class PostsController {
         const offset = req.query.offset || 0;
 
         const [{ count }] = await db.count().from('Posts');
-        const posts = await db(PostsController.tableName).select('*').orderBy('creation_date', 'desc').limit(limit).offset(offset);
-
+        const posts = await db(PostsController.tableName, 'Likes').select('*').orderBy('creation_date', 'desc').limit(limit).offset(offset);
         res.json({
             data: posts,
             meta: {
@@ -32,7 +31,7 @@ class PostsController {
 
     async getOnePost(req, res) {
         const id = req.params.id;
-        const post = await db(PostsController.tableName).select('*').where('id', id).first();
+        const post = await db(PostsController.tableName).select('*').where('post_id', id).first();
         res.json(post);
     }
 
@@ -40,13 +39,13 @@ class PostsController {
         const id = req.params.id;
         const { title, content, access } = req.body;
         const date = new Date();
-        const post = await db(PostsController.tableName).where('id', id).update({ title: title, content: content, edit_date: date, access: access }).returning('*');
+        const post = await db(PostsController.tableName).where('post_id', id).update({ title: title, content: content, edit_date: date, access: access }).returning('*');
         res.json(post);
     }
 
     async deletePost(req, res) {
         const id = req.params.id;
-        const post = await db(PostsController.tableName).where('id', id).del(['id', 'title']);
+        const post = await db(PostsController.tableName).where('post_id', id).del(['id', 'title']);
         res.json(post);
     }
 }

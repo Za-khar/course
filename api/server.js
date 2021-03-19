@@ -22,8 +22,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(authMiddleware);
-
 app.use('/auth', authRoutes);
+
 app.use('/posts', postsRoutes);
 
 app.use((err, req, res, next) => {

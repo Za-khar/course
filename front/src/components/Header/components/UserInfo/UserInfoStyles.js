@@ -15,9 +15,9 @@ export default makeStyles((theme) => ({
     user_info: {
         display: 'flex',
         alignItems: 'center',
+        cursor: 'pointer'
     },
     menu_item: {
-        textDecoration: 'none',
-        color: theme.palette.text_color.main,
+        justifyContent: 'center',
     }
 }));

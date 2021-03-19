@@ -33,7 +33,7 @@ router.post('/registration',
 
             const newUser = (await User.saveUser({ email, hashPassword, userRole }))[0];
 
-            const emailToken = jwt.sign({ id: newUser.id }, config.get('MAIL_SECRET'), { expiresIn: '1h' });
+            const emailToken = jwt.sign({ user_id: newUser.user_id }, config.get('MAIL_SECRET'), { expiresIn: '1h' });
 
             const url = `http://${config.get('HOST')}:${config.get('PORT')}/auth/confirmation/${emailToken}`;
 
@@ -50,7 +50,7 @@ router.post('/registration',
 
             return res.json({
                 newUser: {
-                    id: newUser.id,
+                    user_id: newUser.user_id,
                     email: newUser.email,
                 },
                 message: 'You are registered! Verify your email!'
@@ -64,14 +64,14 @@ router.post('/registration',
 
 router.get('/auth', async function (req, res) {
     try {
-        const user = await User.findOne(req.user.id);
+        const user = await User.findOne(req.user.user_id);
 
-        const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.user_id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
         return res.json({
             token,
             user: {
-                id: user.id,
+                user_id: user.user_id,
                 email: user.email,
             }
         });
@@ -102,12 +102,12 @@ router.post('/login', async function (req, res) {
             return res.status(400).json({ message: 'Invalid password' });
         }
 
-        const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
+        const token = jwt.sign({ user_id: user.user_id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
         return res.json({
             token,
             user: {
-                id: user.id,
+                user_id: user.user_id,
                 email: user.email,
             }
         });
@@ -119,15 +119,15 @@ router.post('/login', async function (req, res) {
 
 router.get('/confirmation/:token', async (req, res) => {
     try {
-        const { id } = jwt.verify(req.params.token, config.get('MAIL_SECRET'));
+        const { user_id } = jwt.verify(req.params.token, config.get('MAIL_SECRET'));
 
-        const { active } = await User.checkActive(id);
+        const { active } = await User.checkActive(user_id);
 
         if (active) {
             return res.status(400).json({ message: 'User is activated' });
         }
 
-        await User.activate(id);
+        await User.activate(user_id);
 
         return res.redirect(`http://${config.get('HOST')}:${config.get('PORT')}/auth/login`);
 

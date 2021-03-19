@@ -6,11 +6,10 @@ import PropTypes from 'prop-types';
 import { objectPost } from '../../Article/PropTypes/postType';
 
 function PostsList({ pagesData, isFetching, showMore, hasNextPage, isFetchingNextPage }) {
-
     return (
         <div className='articles-block'>
             {isFetching && 'Loading...'}
-            {!isFetching && pagesData.map(({ data }) => data.map(post => <Article key={post.id} postData={post} />))}
+            {!isFetching && pagesData.map(({ data }) => data.map(post => <Article key={post.post_id} postData={post} />))}
             <div>
                 <button
                     className='load-more__button'

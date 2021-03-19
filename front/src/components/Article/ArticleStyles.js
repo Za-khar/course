@@ -3,7 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles((theme) => ({
     root: {
         width: '75%',
-        marginBottom: theme.spacing(15)
+        marginBottom: theme.spacing(15),
+        padding: theme.spacing(2)
     },
     media: {
         height: 0,
@@ -22,4 +23,12 @@ export default makeStyles((theme) => ({
     avatar: {
         backgroundColor: 'red',
     },
+    card_menu: {
+        justifyContent: 'space-between',
+    },
+    post_title: {
+        textAlign: 'center',
+        fontWeight: 700,
+        fontSize: 18
+    }
 }));
