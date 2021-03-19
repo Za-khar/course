@@ -6,13 +6,12 @@ const jwt = require('jsonwebtoken');
 class AuthController {
     async socialLogin(req, res) {
         try {
-            const { email, id, provider } = req.data;
-
+            const { email, user_id, provider } = req.data;
             // For logged users
             if (req.user) {
 
-                const socAcc = await User.getSocialAccountByID({ id, provider });
-                const ownAcc = await User.getSocialAccountByUserID({ id: req.user.id, provider });
+                const socAcc = await User.getSocialAccountByID({ user_id, provider });
+                const ownAcc = await User.getSocialAccountByUserID({ id: req.user.user_id, provider });
 
                 if (socAcc) {
                     return res.status(401).send({ message: `This account is already linked` });
@@ -23,41 +22,41 @@ class AuthController {
                 }
 
 
-                await User.saveSocialAccout({ accountID: id, socialAccoutEmail: email, userID: req.user.id, provider });
+                await User.saveSocialAccout({ accountID: user_id, socialAccoutEmail: email, userID: req.user.user_id, provider });
                 return res.send({ message: `Account linked successful` });
             }
 
-            const user = await User.getUserBySocialAccountID(id);
+            const user = await User.getUserBySocialAccountID(user_id);
 
             if (user) {
                 // Log in with social account
 
-                const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '24h' });
+                const token = jwt.sign({ user_id: user.user_id }, config.get('SECRET_KEY'), { expiresIn: '24h' });
 
                 return res.json({
                     token,
                     user: {
-                        id: user.id,
+                        user_id: user.user_id,
                         email: user.email,
                     }
                 });
             } else {
 
                 const user = await User.findByLogin(email);
-                const socAcc = await User.getSocialAccountByID({ id, provider });
+                const socAcc = await User.getSocialAccountByID({ user_id, provider });
 
                 // find and link account by email
                 if (user && !socAcc) {
-                    const ownAcc = await User.getSocialAccountByUserID({ id: user.id, provider });
+                    const ownAcc = await User.getSocialAccountByUserID({ id: user.user_id, provider });
                     if (!ownAcc) {
-                        await User.saveSocialAccout({ accountID: id, socialAccoutEmail: email, userID: user.id, provider });
+                        await User.saveSocialAccout({ accountID: user_id, socialAccoutEmail: email, userID: user.user_id, provider });
 
-                        const token = jwt.sign({ id: user.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
+                        const token = jwt.sign({ user_id: user.user_id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
                         return res.json({
                             token,
                             user: {
-                                id: user.id,
+                                user_id: user.user_id,
                                 email: user.email,
                             }
                         });
@@ -69,19 +68,19 @@ class AuthController {
                 // registration new user
                 if (!socAcc && !user) {
                     const userRole = 'user';
-                    const hashPassword = await bcrypt.hash(id, 4);
+                    const hashPassword = await bcrypt.hash(user_id, 4);
 
                     const newUser = (await User.saveUser({ email, hashPassword, userRole }))[0];
-                    await User.activate(newUser.id);
+                    await User.activate(newUser.user_id);
 
-                    const token = jwt.sign({ id: newUser.id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
+                    const token = jwt.sign({ user_id: newUser.user_id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
-                    await User.saveSocialAccout({ accountID: id, socialAccoutEmail: email, userID: newUser.id, provider });
+                    await User.saveSocialAccout({ accountID: user_id, socialAccoutEmail: email, userID: newUser.user_id, provider });
 
                     return res.json({
                         token,
                         newUser: {
-                            id: newUser.id,
+                            user_id: newUser.user_id,
                             email: newUser.email,
                         },
                     });

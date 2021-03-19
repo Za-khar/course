@@ -21,9 +21,7 @@ function CreateArticleContainer({ id }) {
 
     const onSubmitCreate = useCallback(async formData => {
         try {
-            const data = await createPost({ formData });
-
-            //console.log(data);
+            await createPost({ formData });
         } catch (e) {
             console.log(e);
         }
@@ -31,13 +29,11 @@ function CreateArticleContainer({ id }) {
 
     const onSubmitUpdate = useCallback(async formData => {
         try {
-            const data = await updatePost({ id, formData });
-
-            //console.log(data);
+            await updatePost({ id, formData });
         } catch (e) {
             console.log(e);
         }
-    }, [updatePost]);
+    }, [updatePost, id]);
 
     return (
         <>

@@ -7,7 +7,7 @@ const postsController = require('../controllers/postsController');
 
 const tableName = 'Posts';
 const column = 'user_id';
-const columnIDName = 'id';
+const columnIDName = 'post_id';
 
 router.get('/', postsController.getPosts);
 router.get('/:id', postsController.getOnePost);
