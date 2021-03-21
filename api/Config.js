@@ -3,7 +3,9 @@ require('dotenv').config();
 const UserRoles = {
     user: ['updateOwnPost', 'deleteOwnPost'],
     administrator: ['updateAnyPost', 'deleteAnyPost', 'updateOwnPost', 'deleteOwnPost'],  
-}
+};
+
+const FileTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
 class Config {
     get(param, defVal=undefined) {
@@ -16,6 +18,10 @@ class Config {
 
     getPermissionsByRole(param){
         return UserRoles[param];
+    }
+
+    getFileTypes() {
+        return FileTypes;
     }
 }
 

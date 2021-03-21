@@ -2,7 +2,6 @@ const express = require('express');
 const { checkAuthorized, checkAccess } = require('../middleware/acl');
 const validator = require('../middleware/validator');
 const router = express.Router();
-
 const postsController = require('../controllers/postsController');
 
 const tableName = 'Posts';
@@ -18,7 +17,7 @@ router.post('/',
             title: ['required', 'min:1', 'max:30'],
             content: ['required', 'min:1', 'max:255'],
             access: ['oneOf:me:friends:all']
-        })
+        }),
     ],
     postsController.createPost
 );
@@ -36,7 +35,8 @@ router.put('/:id',
 );
 router.delete('/:id',
     [
-        checkAuthorized, checkAccess([{ permission: 'deleteAnyPost' }, { permission: 'deleteOwnPost', own: { table: tableName, column: column, columnIDName: columnIDName } }])
+        checkAuthorized, 
+        checkAccess([{ permission: 'deleteAnyPost' }, { permission: 'deleteOwnPost', own: { table: tableName, column: column, columnIDName: columnIDName } }])
     ],
     postsController.deletePost
 );

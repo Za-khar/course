@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const postsRoutes = require('./routes/postsRoutes');
 const authRoutes = require('./routes/authRoutes');
+const fileRoutes = require('./routes/fileRoutes');
 
 const authMiddleware = require('./middleware//auth.middleware');
 
@@ -12,6 +13,7 @@ const app = express();
 const port = config.get('PORT', 5000);
 const host = config.get('HOST', 'localcost');
 
+app.use(express.static('files'));
 app.use(express.json());
 
 const corsOptions = {
@@ -22,9 +24,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(authMiddleware);
-app.use('/auth', authRoutes);
 
+app.use('/auth', authRoutes);
 app.use('/posts', postsRoutes);
+app.use('/files', fileRoutes);
 
 app.use((err, req, res, next) => {
     res.status(500).send('500 Server Error');
