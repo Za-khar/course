@@ -1,11 +1,10 @@
 const db = require('../services/db');
 const config = require('../Config');
 const User = require('../models/User');
-const fs = require('fs');
+const fs = require('fs').promises;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { count, offset } = require('../services/db');
-const fileService = require('../services/fileService');
 
 const { filesStorage } = require('../middleware/multerValidation');
 const multer = require('multer');
@@ -105,7 +104,10 @@ class PostsController {
             const id = req.params.id;
 
             const filesData = await db(PostsController.fileTableName).where('post_id', id).del(['path']);
-            filesData.forEach(data => fs.unlinkSync(`${config.get('FILE_PATH')}\\${data.path}`));
+
+            for(let data of filesData){
+                await fs.unlink(`${config.get('FILE_PATH')}\\${data.path}`);
+            }
 
             const post = await db(PostsController.tableName).where('post_id', id).del();
 

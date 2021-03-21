@@ -1,5 +1,5 @@
 const config = require('../Config');
-const fs = require('fs');
+const fs = require('fs').promises;
 const db = require('../services/db');
 
 const { filesStorage } = require('../middleware/multerValidation');
@@ -25,7 +25,7 @@ class FileController {
                 let newAvatar = null;
 
                 if (avatar) {
-                    fs.unlinkSync(`${config.get('FILE_PATH')}\\${avatar.path}`);
+                    await fs.unlink(`${config.get('FILE_PATH')}\\${avatar.path}`);
                     const { filename, size, path } = req.file;
                     newAvatar = (await db(FileController.fileTableName).update({ name: filename, size: size, path: path }).where({ user_id: req.user.user_id }).returning('*'))[0];
                 } else {
@@ -54,7 +54,7 @@ class FileController {
     async deleteAvatar(req, res) {
         try {
             const avatar = (await db(FileController.fileTableName).where('user_id', req.user.user_id).del('path'))[0];
-            fs.unlinkSync(`${config.get('FILE_PATH')}\\${avatar}`);
+            await fs.unlink(`${config.get('FILE_PATH')}\\${avatar}`);
             res.json({ message: 'Avatar successfully deleted' });
         }
         catch (e) {

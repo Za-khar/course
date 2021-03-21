@@ -2,7 +2,7 @@ const config = require('../Config');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
+const fs = require('fs').promises;
 
 class AuthController {
     async socialLogin(req, res) {
@@ -21,7 +21,6 @@ class AuthController {
                 if (ownAcc) {
                     return res.status(401).send({ message: `You are already linked with ${provider} account` });
                 }
-
 
                 await User.saveSocialAccout({ accountID: user_id, socialAccoutEmail: email, userID: req.user.user_id, provider });
                 return res.send({ message: `Account linked successful` });
@@ -73,7 +72,8 @@ class AuthController {
 
                     const newUser = (await User.saveUser({ email, hashPassword, userRole }))[0];
                     await User.activate(newUser.user_id);
-                    fs.mkdirSync(`${config.get('FILE_PATH')}\\files\\${newUser.user_id}`);
+
+                    await fs.mkdir(`${config.get('FILE_PATH')}\\files\\${newUser.user_id}`);
 
                     const token = jwt.sign({ user_id: newUser.user_id }, config.get('SECRET_KEY'), { expiresIn: '1h' });
 
