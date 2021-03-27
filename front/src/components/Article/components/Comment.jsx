@@ -1,26 +1,26 @@
-import React from "react";
-import CardHeader from "@material-ui/core/CardHeader";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import CardContent from "@material-ui/core/CardContent";
-import Box from "@material-ui/core/Box";
+import Avatar from '@material-ui/core/Avatar'
+import Box from '@material-ui/core/Box'
+import CardContent from '@material-ui/core/CardContent'
+import CardHeader from '@material-ui/core/CardHeader'
+import IconButton from '@material-ui/core/IconButton'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import React from 'react'
+import Typography from '@material-ui/core/Typography'
 
 function Comment() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState(null)
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl)
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   return (
     <Box mb={2}>
@@ -45,18 +45,18 @@ function Comment() {
               elevation={0}
               getContentAnchorEl={null}
               anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
+                vertical: 'bottom',
+                horizontal: 'center',
               }}
               transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
+                vertical: 'top',
+                horizontal: 'center',
               }}
               PaperProps={{
                 style: {
-                  border: "1px solid #d3d4d5",
-                  boxShadow: " 0 0 10px rgba(0,0,0,0.2)",
-                  width: "10ch",
+                  border: '1px solid #d3d4d5',
+                  boxShadow: ' 0 0 10px rgba(0,0,0,0.2)',
+                  width: '10ch',
                   maxHeight: 100,
                 },
               }}
@@ -74,7 +74,7 @@ function Comment() {
         </Typography>
       </CardContent>
     </Box>
-  );
+  )
 }
 
-export default Comment;
+export default Comment

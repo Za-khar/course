@@ -1,31 +1,30 @@
-import React, { useState } from "react";
-import userNameType from "../../PropTypes/userName";
+import { Box, Typography } from '@material-ui/core'
+import { Link, useRouteMatch } from 'react-router-dom'
+import React, { useState } from 'react'
 
-import Avatar from "@material-ui/core/Avatar";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Box, Typography } from "@material-ui/core";
-
-import { useRouteMatch, Link } from "react-router-dom";
-import useStyles from "./UserInfoStyles";
+import Avatar from '@material-ui/core/Avatar'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import useStyles from './UserInfoStyles'
+import userNameType from '../../PropTypes/userName'
 
 function UserInfo({ username }) {
-  const match = useRouteMatch();
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
+  const match = useRouteMatch()
+  const classes = useStyles()
+  const [anchorEl, setAnchorEl] = useState(null)
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleLogout = () => {
-    setAnchorEl(null);
-    localStorage.removeItem("accessToken");
-  };
+    setAnchorEl(null)
+    localStorage.removeItem('accessToken')
+  }
 
   return (
     <div>
@@ -41,7 +40,7 @@ function UserInfo({ username }) {
           className={classes.large}
         />
         <Typography>
-          {username.firstName + " " + username.secondName}
+          {username.firstName + ' ' + username.secondName}
         </Typography>
       </Box>
       <Menu
@@ -51,16 +50,16 @@ function UserInfo({ username }) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
         anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
+          vertical: 'bottom',
+          horizontal: 'center',
         }}
         transformOrigin={{
-          vertical: "top",
-          horizontal: "center",
+          vertical: 'top',
+          horizontal: 'center',
         }}
         PaperProps={{
           style: {
-            width: "15ch",
+            width: '15ch',
           },
         }}
         elevation={0}
@@ -84,11 +83,11 @@ function UserInfo({ username }) {
         </MenuItem>
       </Menu>
     </div>
-  );
+  )
 }
 
 UserInfo.propTypes = {
   username: userNameType,
-};
+}
 
-export default UserInfo;
+export default UserInfo

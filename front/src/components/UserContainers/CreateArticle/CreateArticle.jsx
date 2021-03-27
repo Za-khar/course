@@ -1,53 +1,54 @@
-import React, { useState } from "react";
-import { Formik, Form } from "formik";
-import { PropTypes } from "prop-types";
-import * as Yup from "yup";
-import { useHistory } from "react-router-dom";
+import * as Yup from 'yup'
 
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "./components/DialogTitle";
-import CustomTextField from "./components/CustomTextField";
-import FormLabel from "@material-ui/core/FormLabel";
-import InputLabel from "@material-ui/core/FormLabel";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Box from "@material-ui/core/Box";
-import CustomRadioField from "./components/CustomRadioField";
-import useStyles from "./CreateArticleStyles";
+import { Form, Formik } from 'formik'
+import React, { useState } from 'react'
+
+import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+import CustomRadioField from './components/CustomRadioField'
+import CustomTextField from './components/CustomTextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from './components/DialogTitle'
+import FormLabel from '@material-ui/core/FormLabel'
+import InputLabel from '@material-ui/core/FormLabel'
+import { PropTypes } from 'prop-types'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import { useHistory } from 'react-router-dom'
+import useStyles from './CreateArticleStyles'
 
 function CreateArticle({ postData, onSubmit, isCreate }) {
-  const [isOpen, setIsOpen] = useState(true);
-  const classes = useStyles();
-  const history = useHistory();
+  const [isOpen, setIsOpen] = useState(true)
+  const classes = useStyles()
+  const history = useHistory()
   const {
     title: currentTitle,
     content: currentContent,
     access: currentAccess,
-  } = postData;
+  } = postData
 
   const postsSchema = Yup.object().shape({
     title: Yup.string()
-      .min(1, "Too Short!")
-      .max(30, "Too Long!")
-      .required("Required very important field!"),
+      .min(1, 'Too Short!')
+      .max(30, 'Too Long!')
+      .required('Required very important field!'),
     content: Yup.string()
-      .min(1, "Too Short!")
-      .max(255, "Too Long!")
-      .required("Required very important field!"),
-    access: Yup.string().oneOf(["all", "friends", "me"]),
-  });
+      .min(1, 'Too Short!')
+      .max(255, 'Too Long!')
+      .required('Required very important field!'),
+    access: Yup.string().oneOf(['all', 'friends', 'me']),
+  })
 
   const handleSubmit = async (data) => {
-    await onSubmit(data);
-    history.push(`/home`);
-  };
+    await onSubmit(data)
+    history.push(`/home`)
+  }
 
   const handleClose = () => {
-    setIsOpen(false);
-    history.push(`/home`);
-  };
+    setIsOpen(false)
+    history.push(`/home`)
+  }
 
   return (
     <Dialog open={isOpen} onClose={handleClose}>
@@ -56,7 +57,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
         onClose={handleClose}
         className={classes.dialog_title}
       >
-        {isCreate ? "Create article" : "Edit article"}
+        {isCreate ? 'Create article' : 'Edit article'}
       </DialogTitle>
       <DialogContent className={classes.dialog_content}>
         <Formik
@@ -141,19 +142,19 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
         </Formik>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
 
 const objectPost = PropTypes.shape({
   title: PropTypes.string.isRequired,
   content: PropTypes.string.isRequired,
-  access: PropTypes.oneOf(["all", "friends", "me"]).isRequired,
-});
+  access: PropTypes.oneOf(['all', 'friends', 'me']).isRequired,
+})
 
 CreateArticle.propTypes = {
   postData: objectPost.isRequired,
   onSubmit: PropTypes.func.isRequired,
   isCreate: PropTypes.bool.isRequired,
-};
+}
 
-export default CreateArticle;
+export default CreateArticle
