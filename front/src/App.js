@@ -1,10 +1,12 @@
-import React from 'react';
-import './App.css';
-import UserPage from './components/UserPage/UserPage';
-import GuestPage from './containers/GuestPage';
-import { Route, Switch } from 'react-router-dom';
-import ThemeProvider from '@material-ui/styles/ThemeProvider';
-import theme from './styles/colors';
+import './App.css'
+
+import { Route, Switch } from 'react-router-dom'
+
+import GuestPage from './containers/GuestPage'
+import React from 'react'
+import ThemeProvider from '@material-ui/styles/ThemeProvider'
+import UserPage from './components/UserPage/UserPage'
+import theme from './styles/colors'
 
 function App() {
   return (
@@ -13,8 +15,8 @@ function App() {
         <Route path="/home" component={UserPage} />
         <Route path="/" component={GuestPage} />
       </Switch>
-    </ThemeProvider> 
-  );
+    </ThemeProvider>
+  )
 }
 
-export default App;
+export default App

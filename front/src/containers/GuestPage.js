@@ -1,10 +1,8 @@
-import React from 'react';
-import GuestPage from '../components/GuestPage/GuestPage';
+import GuestPage from '../components/GuestPage/GuestPage'
+import React from 'react'
 
 function GuestPageContainer() {
-    return (
-        <GuestPage/>
-    );
+  return <GuestPage />
 }
 
-export default GuestPageContainer;
+export default GuestPageContainer

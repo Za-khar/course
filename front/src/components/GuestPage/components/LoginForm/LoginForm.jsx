@@ -1,33 +1,34 @@
-import React from "react";
-import "./LoginForm.css";
-import { useHistory } from "react-router-dom";
-import SocialButton from "./SocialButton";
-import config from "../../../../Config.json";
-import PropTypes from "prop-types";
-import { socialAuth } from "./hooks/socialAuth";
+import './LoginForm.css'
+
+import PropTypes from 'prop-types'
+import React from 'react'
+import SocialButton from './SocialButton'
+import config from '../../../../Config.json'
+import { socialAuth } from './hooks/socialAuth'
+import { useHistory } from 'react-router-dom'
 
 function LoginForm({ setValidate }) {
-  let history = useHistory();
+  let history = useHistory()
 
   const handleSubmit = (event) => {
-    event.preventDefault();
-    history.push("/home");
-  };
+    event.preventDefault()
+    history.push('/home')
+  }
 
   const handleSocialLogin = async (user) => {
     try {
-      const userData = await socialAuth(user);
-      setValidate(true);
-      localStorage.setItem("accessToken", userData.data.token);
+      const userData = await socialAuth(user)
+      setValidate(true)
+      localStorage.setItem('accessToken', userData.data.token)
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
-  };
+  }
 
   const handleSocialLoginFailure = (err) => {
-    window.location.reload();
-    console.error(err);
-  };
+    window.location.reload()
+    console.error(err)
+  }
 
   return (
     <div className="wrap-login">
@@ -72,11 +73,11 @@ function LoginForm({ setValidate }) {
         </div>
       </form>
     </div>
-  );
+  )
 }
 
 LoginForm.propTypes = {
   setValidate: PropTypes.func,
-};
+}
 
-export default LoginForm;
+export default LoginForm

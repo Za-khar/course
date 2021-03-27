@@ -1,51 +1,52 @@
-import React from "react";
-import { Link, useRouteMatch } from "react-router-dom";
-import { objectPost } from "./PropTypes/postType";
-import Comment from "./components/Comment";
+import { Link, useRouteMatch } from 'react-router-dom'
 
-import clsx from "clsx";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
+import Avatar from '@material-ui/core/Avatar'
+import Box from '@material-ui/core/Box'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import CardContent from '@material-ui/core/CardContent'
+import CardHeader from '@material-ui/core/CardHeader'
+import ChatIcon from '@material-ui/icons/Chat'
+import Collapse from '@material-ui/core/Collapse'
+import Comment from './components/Comment'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import IconButton from '@material-ui/core/IconButton'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import React from 'react'
+import TextField from '@material-ui/core/TextField'
+import Typography from '@material-ui/core/Typography'
+import clsx from 'clsx'
+import { objectPost } from './PropTypes/postType'
+import useStyles from './ArticleStyles'
+
 //import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Collapse from "@material-ui/core/Collapse";
-import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Box from "@material-ui/core/Box";
-import useStyles from "./ArticleStyles";
-import ChatIcon from "@material-ui/icons/Chat";
-import TextField from "@material-ui/core/TextField";
 
 function Article({ postData }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [expanded, setExpanded] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [expanded, setExpanded] = React.useState(false)
 
-  const match = useRouteMatch();
-  const classes = useStyles();
+  const match = useRouteMatch()
+  const classes = useStyles()
 
-  const { post_id, content, title, creation_date } = postData;
+  const { post_id, content, title, creation_date } = postData
 
-  const date = new Date(creation_date);
+  const date = new Date(creation_date)
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl)
 
   const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+    setExpanded(!expanded)
+  }
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   return (
     <Card className={classes.root}>
@@ -74,18 +75,18 @@ function Article({ postData }) {
               elevation={0}
               getContentAnchorEl={null}
               anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
+                vertical: 'bottom',
+                horizontal: 'center',
               }}
               transformOrigin={{
-                vertical: "top",
-                horizontal: "center",
+                vertical: 'top',
+                horizontal: 'center',
               }}
               PaperProps={{
                 style: {
-                  border: "1px solid #d3d4d5",
-                  boxShadow: " 0 0 10px rgba(0,0,0,0.2)",
-                  width: "10ch",
+                  border: '1px solid #d3d4d5',
+                  boxShadow: ' 0 0 10px rgba(0,0,0,0.2)',
+                  width: '10ch',
                   maxHeight: 100,
                 },
               }}
@@ -101,7 +102,7 @@ function Article({ postData }) {
           </>
         }
         title="UserName"
-        subheader={date.toDateString() + " " + date.toLocaleTimeString()}
+        subheader={date.toDateString() + ' ' + date.toLocaleTimeString()}
       />
       {/* <CardMedia
                 className={classes.media}
@@ -149,17 +150,15 @@ function Article({ postData }) {
           <Comment></Comment>
         </CardContent>
         <CardContent>
-          <TextField
-            multiline
-          />
+          <TextField multiline />
         </CardContent>
       </Collapse>
     </Card>
-  );
+  )
 }
 
 Article.propTypes = {
   postData: objectPost,
-};
+}
 
-export default Article;
+export default Article
