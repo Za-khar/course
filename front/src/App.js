@@ -5,7 +5,7 @@ import { Route, Switch } from 'react-router-dom'
 import GuestPage from './containers/GuestPage'
 import React from 'react'
 import ThemeProvider from '@material-ui/styles/ThemeProvider'
-import UserPage from './components/UserPage/UserPage'
+import UserPage from './containers/UserPageContainer/UserPage'
 import theme from './styles/colors'
 
 function App() {

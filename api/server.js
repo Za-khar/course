@@ -1,42 +1,44 @@
-const express = require('express');
-const config = require('./Config');
+const express = require('express')
+const config = require('./Config')
 
-const cors = require('cors');
+const cors = require('cors')
 
-const postsRoutes = require('./routes/postsRoutes');
-const authRoutes = require('./routes/authRoutes');
-const fileRoutes = require('./routes/fileRoutes');
+const postsRoutes = require('./routes/postsRoutes')
+const authRoutes = require('./routes/authRoutes')
+const fileRoutes = require('./routes/fileRoutes')
+const userRoutes = require('./routes/userRoutes')
 
-const authMiddleware = require('./middleware//auth.middleware');
+const authMiddleware = require('./middleware//auth.middleware')
 
-const app = express();
-const port = config.get('PORT', 5000);
-const host = config.get('HOST', 'localcost');
-
-app.use(express.static('files'));
-app.use(express.json());
+const app = express()
+const port = config.get('PORT', 5000)
+const host = config.get('HOST', 'localcost')
 
 const corsOptions = {
-    origin: `http://${config.get('CLIENT_HOST')}:${config.get('CLIENT_PORT')}`,
-    optionsSuccessStatus: 200 
+  origin: `http://${config.get('CLIENT_HOST')}:${config.get('CLIENT_PORT')}`,
+  optionsSuccessStatus: 200,
 }
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions))
 
-app.use(authMiddleware);
+app.use('/files', express.static('files'))
+app.use(express.json())
 
-app.use('/auth', authRoutes);
-app.use('/posts', postsRoutes);
-app.use('/files', fileRoutes);
+app.use(authMiddleware)
+
+app.use('/auth', authRoutes)
+app.use('/users', userRoutes)
+app.use('/posts', postsRoutes)
+app.use('/files', fileRoutes)
 
 app.use((err, req, res, next) => {
-    res.status(500).send('500 Server Error');
-});
+  res.status(500).send('500 Server Error')
+})
 
 app.use((req, res) => {
-    res.status(404).send('404 Not found');
-});
+  res.status(404).send('404 Not found')
+})
 
 app.listen(port, () => {
-    console.log(`App listening at http://${host}:${port}`);
-});
+  console.log(`App listening at http://${host}:${port}`)
+})

@@ -5,14 +5,19 @@ import React, { useState } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
+import config from '../../../../Config.json'
 import useStyles from './UserInfoStyles'
-import userNameType from '../../PropTypes/userName'
+import userDataType from '../../../UserPage/PropTypes/userDataType'
 
-function UserInfo({ username }) {
+function UserInfo({ userData }) {
   const match = useRouteMatch()
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
-
+  const { first_name, last_name, path } = userData || {
+    first_name: '',
+    last_name: '',
+    path: '',
+  }
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -36,12 +41,12 @@ function UserInfo({ username }) {
       >
         <Avatar
           alt=""
-          src="/static/images/avatar/1.jpg"
+          src={`http://${config.SERVER_HOST}:${
+            config.SERVER_PORT
+          }/${path?.replace(/\\/g, '/')}`}
           className={classes.large}
         />
-        <Typography>
-          {username.firstName + ' ' + username.secondName}
-        </Typography>
+        <Typography>{first_name + ' ' + last_name}</Typography>
       </Box>
       <Menu
         id="menu"
@@ -87,7 +92,7 @@ function UserInfo({ username }) {
 }
 
 UserInfo.propTypes = {
-  username: userNameType,
+  userData: userDataType,
 }
 
 export default UserInfo

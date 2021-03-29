@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import Container from '@material-ui/core/Container'
@@ -6,15 +5,15 @@ import CreateArticleContainer from '../../containers/Posts/CreateArticleContaine
 import Header from '../Header/Header'
 import MyProfileContainer from '../UserContainers/MyProfile/MyProfile'
 import PostsListContainer from '../../containers/Posts/PostsList'
+import PropTypes from 'prop-types'
 import userDataType from './PropTypes/userDataType'
 
-function UserPage({ userData }) {
-  const [username, setUsername] = useState({ firstName: '', secondName: '' })
+function UserPage({ userData, onSubmitUpdate, uploadAvatar }) {
   const match = useRouteMatch()
 
   return (
     <div>
-      <Header username={username} />
+      <Header userData={userData} />
       <Container>
         <Switch>
           <Route
@@ -41,7 +40,13 @@ function UserPage({ userData }) {
             exact
             sensitive
             strict
-            render={() => <MyProfileContainer setUsername={setUsername} />}
+            render={() => (
+              <MyProfileContainer
+                userData={userData}
+                onSubmitUpdate={onSubmitUpdate}
+                uploadAvatar={uploadAvatar}
+              />
+            )}
           />
         </Switch>
       </Container>
@@ -51,6 +56,8 @@ function UserPage({ userData }) {
 
 UserPage.propTypes = {
   userData: userDataType,
+  onSubmitUpdate: PropTypes.func,
+  uploadAvatar: PropTypes.func,
 }
 
 export default UserPage
