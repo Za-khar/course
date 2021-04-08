@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import CardHeader from '@material-ui/core/CardHeader'
+import CardMedia from '@material-ui/core/CardMedia'
 import ChatIcon from '@material-ui/icons/Chat'
 import Collapse from '@material-ui/core/Collapse'
 import Comment from './components/Comment'
@@ -18,10 +19,9 @@ import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
+import config from '../../Config.json'
 import { objectPost } from './PropTypes/postType'
 import useStyles from './ArticleStyles'
-
-//import CardMedia from '@material-ui/core/CardMedia';
 
 function Article({ postData }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -30,10 +30,8 @@ function Article({ postData }) {
   const match = useRouteMatch()
   const classes = useStyles()
 
-  const { post_id, content, title, creation_date } = postData
-
+  const { post_id, content, title, creation_date, filesData } = postData
   const date = new Date(creation_date)
-
   const open = Boolean(anchorEl)
 
   const handleExpandClick = () => {
@@ -104,10 +102,16 @@ function Article({ postData }) {
         title="UserName"
         subheader={date.toDateString() + ' ' + date.toLocaleTimeString()}
       />
-      {/* <CardMedia
-                className={classes.media}
-                image="/static/images/cards/paella.jpg"
-            /> */}
+      {filesData.map((file, index) => (
+        <CardMedia
+          className={classes.media}
+          image={`http://${config.SERVER_HOST}:${
+            config.SERVER_PORT
+          }/${file.path.replace(/\\/g, '/')}`}
+          key={index}
+        />
+      ))}
+
       <CardContent>
         <Typography component="h4" className={classes.post_title}>
           {title}

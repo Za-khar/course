@@ -8,9 +8,9 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import UserInfo from './components/UserInfo/UserInfo'
 import useStyles from './HeaderStyles'
-import userNameType from './PropTypes/userName'
+import userDataType from '../UserPage/PropTypes/userDataType'
 
-function Header({ username }) {
+function Header({ userData }) {
   const match = useRouteMatch()
   const classes = useStyles()
 
@@ -26,7 +26,7 @@ function Header({ username }) {
               Add Article
             </Button>
           </Link>
-          <UserInfo username={username} />
+          <UserInfo userData={userData} />
         </Toolbar>
       </Container>
     </AppBar>
@@ -34,7 +34,7 @@ function Header({ username }) {
 }
 
 Header.propTypes = {
-  username: userNameType,
+  userData: userDataType,
 }
 
 export default Header

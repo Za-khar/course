@@ -18,7 +18,11 @@ function CreateArticleContainer({ id }) {
     }
   )
 
-  const postData = response?.data || { title: '', content: '', access: 'all' }
+  const postData = response?.data.data || {
+    title: '',
+    content: '',
+    access: 'all',
+  }
 
   const { mutate: updatePost } = useMutation(updatePostRequest)
   const { mutate: createPost } = useMutation(createPostRequest)

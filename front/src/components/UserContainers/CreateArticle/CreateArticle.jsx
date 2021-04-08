@@ -1,3 +1,5 @@
+import 'cropperjs/dist/cropper.css'
+
 import * as Yup from 'yup'
 
 import { Form, Formik } from 'formik'
@@ -5,20 +7,29 @@ import React, { useState } from 'react'
 
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
+import Card from '@material-ui/core/Card'
+import Cropper from 'react-cropper'
 import CustomRadioField from './components/CustomRadioField'
 import CustomTextField from './components/CustomTextField'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from './components/DialogTitle'
 import FormLabel from '@material-ui/core/FormLabel'
+import IconButton from '@material-ui/core/IconButton'
 import InputLabel from '@material-ui/core/FormLabel'
+import PhotoCamera from '@material-ui/icons/PhotoCamera'
 import { PropTypes } from 'prop-types'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import { useHistory } from 'react-router-dom'
 import useStyles from './CreateArticleStyles'
 
+const FILE_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
+
 function CreateArticle({ postData, onSubmit, isCreate }) {
+  const [files, setFiles] = useState([])
+  const [croppedFiles, setCroppedFiles] = useState([])
+  const [croppers, setCroppers] = useState([])
   const [isOpen, setIsOpen] = useState(true)
   const classes = useStyles()
   const history = useHistory()
@@ -41,13 +52,50 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
   })
 
   const handleSubmit = async (data) => {
-    await onSubmit(data)
+    const formData = new FormData()
+    for (let prop in data) {
+      formData.append(prop, data[prop])
+    }
+    for (let croppedFile of croppedFiles) {
+      const base64 = await fetch(croppedFile)
+      const file = await base64.blob()
+      formData.append('files', file)
+    }
+
+    await onSubmit(formData)
     history.push(`/home`)
   }
 
   const handleClose = () => {
     setIsOpen(false)
     history.push(`/home`)
+  }
+
+  const handleUpload = (e) => {
+    e.preventDefault()
+    const filesData = e.target.files
+    if (filesData.length <= 4) {
+      for (let fileData of filesData) {
+        if (FILE_TYPES.includes(fileData.type) && fileData.size < 10000000) {
+          const reader = new FileReader()
+          reader.onload = () => {
+            setFiles((files) => [...files, reader.result])
+          }
+          reader.readAsDataURL(fileData)
+        }
+      }
+    }
+  }
+
+  const cropFile = () => {
+    for (let cropper of croppers) {
+      if (typeof cropper !== 'undefined') {
+        setCroppedFiles((croppedFiles) => [
+          ...croppedFiles,
+          cropper.getCroppedCanvas().toDataURL(),
+        ])
+      }
+    }
   }
 
   return (
@@ -78,6 +126,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
                   id="title"
                   onChange={handleChange}
                   name="title"
+                  value={values.title}
                   label="Enter title..."
                   helperText={errors.title && touched.title && errors.title}
                   fullWidth
@@ -90,6 +139,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
                   id="content"
                   name="content"
                   multiline
+                  value={values.content}
                   onChange={handleChange}
                   label="Enter content..."
                   helperText={errors.content}
@@ -129,6 +179,67 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
                   name="access"
                 />
               </RadioGroup>
+              {isCreate && (
+                <Box mb={3}>
+                  <InputLabel style={{ marginRight: 10 }}>
+                    {croppedFiles.toString()
+                      ? 'Preview images:'
+                      : 'Upload images (max: 4):'}
+                  </InputLabel>
+                  {!croppedFiles.toString() && (
+                    <>
+                      <input
+                        accept="accept=.png, .jpg, .jpeg"
+                        id="upload-files"
+                        type="file"
+                        multiple
+                        onChange={handleUpload}
+                        hidden
+                      />
+                      <label htmlFor="upload-files">
+                        <IconButton color="primary" component="span">
+                          <PhotoCamera />
+                        </IconButton>
+                      </label>
+                    </>
+                  )}
+
+                  {files.toString() &&
+                    !croppedFiles.toString() &&
+                    files.map((file, index) => (
+                      <Box mb={3}>
+                        <Cropper
+                          src={file}
+                          onInitialized={(instance) =>
+                            setCroppers((croppers) => [...croppers, instance])
+                          }
+                          key={index}
+                        />
+                      </Box>
+                    ))}
+                  {files.toString() && !croppedFiles.toString() && (
+                    <Button variant="contained" onClick={cropFile}>
+                      Crop
+                    </Button>
+                  )}
+
+                  {croppedFiles.toString() && (
+                    <Box className={classes.image_list}>
+                      {croppedFiles.map((croppedFile, index) => (
+                        <Card className={classes.preview_image}>
+                          <img
+                            style={{ width: '100%' }}
+                            src={croppedFile}
+                            key={index}
+                            alt=""
+                          />
+                        </Card>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              )}
+
               <Button
                 type="submit"
                 variant="contained"
