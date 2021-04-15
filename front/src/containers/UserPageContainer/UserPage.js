@@ -1,19 +1,38 @@
-import React, { useCallback } from 'react'
-import { getOneUser, updateUser, uploadUserAvatar } from './hooks/userRequests'
+import React, { useCallback, useContext } from 'react'
 import { useMutation, useQuery } from 'react-query'
 
+import { Context } from '../../authStore'
 import UserPage from '../../components/UserPage/UserPage'
+import useApi from '../../hooks/useApi'
+import useAuth from '../../hooks/useAuth'
+import { useQueryClient } from 'react-query'
 
 function UserPageContainer() {
-  const { data: response, isFetching } = useQuery('user', getOneUser)
+  const queryClient = useQueryClient()
+  const [state, dispatch] = useContext(Context)
+  const { callApi } = useApi()
 
-  const { mutate: updateUserData } = useMutation(updateUser)
-  const { mutate: uploadAvatar } = useMutation(uploadUserAvatar)
+  useQuery('avatar', () => callApi({ url: `/files/avatar` }))
+
+  const { mutate: updateUserData } = useMutation(callApi, {
+    onSuccess: (res) => {
+      dispatch({
+        type: 'SET_AUTH',
+        payload: {
+          user: res.data,
+        },
+      })
+    },
+  })
+
+  const { mutate: uploadAvatar } = useMutation(callApi, {
+    onSuccess: () => queryClient.invalidateQueries('avatar'),
+  })
 
   const onSubmitUpdate = useCallback(
     async (formData) => {
       try {
-        await updateUserData({ formData })
+        await updateUserData({ url: `/users`, method: 'put', data: formData })
       } catch (e) {
         console.log(e)
       }
@@ -24,7 +43,11 @@ function UserPageContainer() {
   const onSubmitUpload = useCallback(
     async (formData) => {
       try {
-        await uploadAvatar({ formData })
+        await uploadAvatar({
+          url: `/files/upload-avatar`,
+          method: 'post',
+          data: formData,
+        })
       } catch (e) {
         console.log(e)
       }
@@ -33,11 +56,7 @@ function UserPageContainer() {
   )
 
   return (
-    <UserPage
-      userData={response?.data}
-      onSubmitUpdate={onSubmitUpdate}
-      uploadAvatar={onSubmitUpload}
-    />
+    <UserPage onSubmitUpdate={onSubmitUpdate} uploadAvatar={onSubmitUpload} />
   )
 }
 

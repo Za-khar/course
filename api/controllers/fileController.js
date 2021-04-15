@@ -49,10 +49,10 @@ class FileController {
               .returning('*')
           )[0]
         }
-        return res.json({ data: newAvatar })
+        return res.send(newAvatar)
       } catch (e) {
         console.log(e)
-        res.status(400).json({ message: 'Upload error' })
+        res.status(400).send({ message: 'Upload error' })
       }
     })
   }
@@ -63,7 +63,7 @@ class FileController {
         .select('*')
         .where('user_id', req.user.user_id)
         .first()
-      res.json({ data: avatar })
+      res.send(avatar)
     } catch (e) {
       console.log(e)
       res.status(400).json({ message: 'Search error' })

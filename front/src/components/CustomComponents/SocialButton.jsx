@@ -1,11 +1,12 @@
+import Button from '@material-ui/core/Button'
 import React from 'react'
 import SocialLogin from 'react-social-login'
 
 function SocialButton({ children, triggerLogin, className }) {
   return (
-    <button onClick={triggerLogin} className={className}>
+    <Button onClick={triggerLogin} className={className}>
       {children}
-    </button>
+    </Button>
   )
 }
 

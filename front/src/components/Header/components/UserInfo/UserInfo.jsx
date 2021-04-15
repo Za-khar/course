@@ -5,19 +5,18 @@ import React, { useState } from 'react'
 import Avatar from '@material-ui/core/Avatar'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import config from '../../../../Config.json'
+import useAuth from '../../../../hooks/useAuth'
+import { useQueryClient } from 'react-query'
 import useStyles from './UserInfoStyles'
-import userDataType from '../../../UserPage/PropTypes/userDataType'
+import CustomAvatar from '../../../CustomComponents/CustomAvatar'
 
-function UserInfo({ userData }) {
+function UserInfo() {
+  const queryClient = useQueryClient()
+  const path = queryClient.getQueryData('avatar')?.data?.path
+  const { user, logoutMutation } = useAuth()
   const match = useRouteMatch()
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
-  const { first_name, last_name, path } = userData || {
-    first_name: '',
-    last_name: '',
-    path: '',
-  }
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -28,7 +27,7 @@ function UserInfo({ userData }) {
 
   const handleLogout = () => {
     setAnchorEl(null)
-    localStorage.removeItem('accessToken')
+    logoutMutation.mutate()
   }
 
   return (
@@ -39,14 +38,12 @@ function UserInfo({ userData }) {
         onClick={handleClick}
         className={classes.user_info}
       >
-        <Avatar
-          alt=""
-          src={`http://${config.SERVER_HOST}:${
-            config.SERVER_PORT
-          }/${path?.replace(/\\/g, '/')}`}
-          className={classes.large}
+        <CustomAvatar
+          path={path}
+          styles={classes.large}
+          name={user.first_name}
         />
-        <Typography>{first_name + ' ' + last_name}</Typography>
+        <Typography>{user?.first_name + ' ' + user?.last_name}</Typography>
       </Box>
       <Menu
         id="menu"
@@ -89,10 +86,6 @@ function UserInfo({ userData }) {
       </Menu>
     </div>
   )
-}
-
-UserInfo.propTypes = {
-  userData: userDataType,
 }
 
 export default UserInfo

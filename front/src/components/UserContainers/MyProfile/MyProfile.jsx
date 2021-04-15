@@ -7,38 +7,43 @@ import Avatar from '@material-ui/core/Avatar'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
-import CustomRadioField from '../CreateArticle/components/CustomRadioField'
-import CustomTextField from '../CreateArticle/components/CustomTextField'
-import FormControl from '@material-ui/core/FormControl'
+import CustomRadioField from '../../CustomComponents/CustomRadioField'
+import CustomTextField from '../../CustomComponents/CustomTextField'
 import InputLabel from '@material-ui/core/FormLabel'
 import { PropTypes } from 'prop-types'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
-import SocialButton from '../../GuestPage/components/LoginForm/SocialButton'
+import SocialButton from '../../CustomComponents/SocialButton'
 import config from '../../../Config.json'
-import { socialAuth } from '../../GuestPage/components/LoginForm/hooks/socialAuth'
+import useAuth from '../../../hooks/useAuth'
+import { useQueryClient } from 'react-query'
 import useStyles from './MyProfileStyles'
 import userDataType from '../../UserPage/PropTypes/userDataType'
+import CustomAvatar from '../../CustomComponents/CustomAvatar'
+import { matchPath } from 'react-router'
 
-function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
+function MyProfile({ onSubmitUpdate, uploadAvatar }) {
+  const queryClient = useQueryClient()
+  const path = queryClient.getQueryData('avatar')?.data?.path
   const [editMode, setEditMode] = useState(false)
+  const { user } = useAuth()
   const classes = useStyles()
   const {
     first_name,
     last_name,
-    path,
     phone_number,
     email,
     show_email,
     show_phone_number,
-  } = userData || {
-    first_name: '',
-    last_name: '',
-    path: '',
-    phone_number: '',
-    email: '',
-    show_email: 'all',
-    show_phone_number: 'all',
+  } = user
+
+  const initialValues = {
+    first_name: first_name || '',
+    last_name: last_name || '',
+    phone_number: phone_number || '',
+    email: email || '',
+    show_email: show_email || 'all',
+    show_phone_number: show_phone_number || 'all',
   }
 
   const handleUpload = async (e) => {
@@ -48,19 +53,26 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
     formData.append('avatar', avatar)
     await uploadAvatar(formData)
   }
-  const handleEdit = () => {
+  const handleEdit = (resetForm) => {
+    if (resetForm) {
+      resetForm()
+    }
     setEditMode(!editMode)
   }
 
   const usersSchema = Yup.object().shape({
     first_name: Yup.string()
       .min(1, 'Too Short!')
-      .max(255, 'Too Long!')
+      .max(20, 'Too Long!')
       .required('Required very important field!'),
     last_name: Yup.string()
       .min(1, 'Too Short!')
-      .max(255, 'Too Long!')
+      .max(20, 'Too Long!')
       .required('Required very important field!'),
+    phone_number: Yup.string().length(
+      12,
+      'Phone number must be exactly 12 character'
+    ),
   })
 
   const handleSubmit = async (data) => {
@@ -70,8 +82,8 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
 
   const handleSocialLogin = async (user) => {
     try {
-      const res = await socialAuth(user)
-      console.log(res)
+      // // const res = await socialAuth(user)
+      // console.log(res)
     } catch (e) {
       console.log(e)
     }
@@ -93,28 +105,16 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
           hidden
         />
         <label htmlFor="upload-avatar">
-          <Avatar
-            alt="Remy Sharp"
-            src={`http://${config.SERVER_HOST}:${
-              config.SERVER_PORT
-            }/${path?.replace(/\\/g, '/')}`}
-          />
+          <CustomAvatar src={path} name={user.first_name}></CustomAvatar>
         </label>
       </Box>
       <Formik
         enableReinitialize
-        initialValues={{
-          first_name: first_name,
-          last_name: last_name,
-          phone_number: phone_number,
-          email: email,
-          show_email: show_email,
-          show_phone_number: show_phone_number,
-        }}
+        initialValues={initialValues}
         validationSchema={usersSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, values, handleChange }) => (
+        {({ errors, touched, values, handleChange, resetForm }) => (
           <Form>
             <Box mb={3}>
               <InputLabel>First name:</InputLabel>
@@ -235,7 +235,11 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
               </RadioGroup>
             </Box>
             {!editMode && (
-              <Button variant="contained" color="primary" onClick={handleEdit}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEdit.bind(null, null)}
+              >
                 Edit
               </Button>
             )}
@@ -245,7 +249,11 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
               </Button>
             )}
             {editMode && (
-              <Button variant="contained" color="primary" onClick={handleEdit}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleEdit.bind(null, resetForm)}
+              >
                 Cancel
               </Button>
             )}
@@ -277,7 +285,6 @@ function MyProfile({ userData, onSubmitUpdate, uploadAvatar }) {
 }
 
 MyProfile.propTypes = {
-  userData: userDataType,
   uploadAvatar: PropTypes.func,
   onSubmitUpdate: PropTypes.func,
 }

@@ -6,14 +6,13 @@ import Header from '../Header/Header'
 import MyProfileContainer from '../UserContainers/MyProfile/MyProfile'
 import PostsListContainer from '../../containers/Posts/PostsList'
 import PropTypes from 'prop-types'
-import userDataType from './PropTypes/userDataType'
 
-function UserPage({ userData, onSubmitUpdate, uploadAvatar }) {
+function UserPage({ onSubmitUpdate, uploadAvatar }) {
   const match = useRouteMatch()
 
   return (
     <div>
-      <Header userData={userData} />
+      <Header />
       <Container>
         <Switch>
           <Route
@@ -42,7 +41,6 @@ function UserPage({ userData, onSubmitUpdate, uploadAvatar }) {
             strict
             render={() => (
               <MyProfileContainer
-                userData={userData}
                 onSubmitUpdate={onSubmitUpdate}
                 uploadAvatar={uploadAvatar}
               />
@@ -55,7 +53,6 @@ function UserPage({ userData, onSubmitUpdate, uploadAvatar }) {
 }
 
 UserPage.propTypes = {
-  userData: userDataType,
   onSubmitUpdate: PropTypes.func,
   uploadAvatar: PropTypes.func,
 }
