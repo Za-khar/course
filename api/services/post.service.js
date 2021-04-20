@@ -1,7 +1,7 @@
 const Post = require('../models/Post')
 const File = require('../models/File')
 const fs = require('fs').promises
-const { as } = require('./db')
+const config = require('../Config')
 
 const getPosts = async (limit, offset, user_id) => {
   const posts = await Post.getPostsData(limit, offset, user_id)

@@ -7,6 +7,7 @@ export default makeStyles({
   },
   dialog_content: {
     padding: '0 30px 30px 30px',
+    paddingBottom: '110px',
   },
   input: {
     display: 'flex',

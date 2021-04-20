@@ -4,8 +4,10 @@ import useApi from '../../hooks/useApi'
 
 import CreateArticle from '../../components/UserContainers/CreateArticle/CreateArticle'
 import PropTypes from 'prop-types'
+import { useHistory } from 'react-router-dom'
 
 function CreateArticleContainer({ id }) {
+  const history = useHistory()
   const queryClient = useQueryClient()
   const { callApi } = useApi()
   const { data: response, isFetching } = useQuery(
@@ -23,10 +25,16 @@ function CreateArticleContainer({ id }) {
   }
 
   const { mutate: updatePost } = useMutation(callApi, {
-    onSuccess: () => queryClient.invalidateQueries('posts'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('posts')
+      history.push(`/home`)
+    },
   })
   const { mutate: createPost } = useMutation(callApi, {
-    onSuccess: () => queryClient.invalidateQueries('posts'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('posts')
+      history.push(`/home`)
+    },
   })
 
   const onSubmitCreate = useCallback(

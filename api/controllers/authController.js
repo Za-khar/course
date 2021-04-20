@@ -8,7 +8,6 @@ const {
   nodemailerService,
   socialService,
 } = require('../services')
-const { ContextHandlerImpl } = require('express-validator/src/chain')
 
 class AuthController {
   async socialRegistration(req, res) {

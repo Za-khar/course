@@ -61,9 +61,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
       const file = await base64.blob()
       formData.append('files', file)
     }
-
     await onSubmit(formData)
-    history.push(`/home`)
   }
 
   const handleClose = () => {
@@ -207,7 +205,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
                   {files.toString() &&
                     !croppedFiles.toString() &&
                     files.map((file, index) => (
-                      <Box mb={3}>
+                      <Box mb={3} key={index}>
                         <Cropper
                           src={file}
                           onInitialized={(instance) =>
@@ -226,7 +224,7 @@ function CreateArticle({ postData, onSubmit, isCreate }) {
                   {croppedFiles.toString() && (
                     <Box className={classes.image_list}>
                       {croppedFiles.map((croppedFile, index) => (
-                        <Card className={classes.preview_image}>
+                        <Card className={classes.preview_image} key={index}>
                           <img
                             style={{ width: '100%' }}
                             src={croppedFile}

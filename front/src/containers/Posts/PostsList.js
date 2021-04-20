@@ -33,7 +33,6 @@ function PostsListContainer() {
   } = useInfiniteQuery('posts', infiniteFetch, {
     getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
   })
-
   const pagesData = response?.pages || []
 
   const showMore = () => fetchNextPage()

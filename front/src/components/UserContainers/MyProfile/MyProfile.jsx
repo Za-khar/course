@@ -105,7 +105,7 @@ function MyProfile({ onSubmitUpdate, uploadAvatar }) {
           hidden
         />
         <label htmlFor="upload-avatar">
-          <CustomAvatar src={path} name={user.first_name}></CustomAvatar>
+          <CustomAvatar path={path} name={user.first_name}></CustomAvatar>
         </label>
       </Box>
       <Formik
