@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react'
-import {
-  createPostRequest,
-  getOnePost,
-  updatePostRequest,
-} from './hooks/articleRequests'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation, useQuery, useQueryClient } from 'react-query'
+import useApi from '../../hooks/useApi'
 
 import CreateArticle from '../../components/UserContainers/CreateArticle/CreateArticle'
 import PropTypes from 'prop-types'
+import { useHistory } from 'react-router-dom'
 
 function CreateArticleContainer({ id }) {
+  const history = useHistory()
+  const queryClient = useQueryClient()
+  const { callApi } = useApi()
   const { data: response, isFetching } = useQuery(
-    ['posts', id],
-    () => getOnePost({ id }),
+    ['post', id],
+    () => callApi({ url: `/posts/${id}` }),
     {
       enabled: !!id,
     }
@@ -24,13 +24,23 @@ function CreateArticleContainer({ id }) {
     access: 'all',
   }
 
-  const { mutate: updatePost } = useMutation(updatePostRequest)
-  const { mutate: createPost } = useMutation(createPostRequest)
+  const { mutate: updatePost } = useMutation(callApi, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('posts')
+      history.push(`/home`)
+    },
+  })
+  const { mutate: createPost } = useMutation(callApi, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('posts')
+      history.push(`/home`)
+    },
+  })
 
   const onSubmitCreate = useCallback(
     async (formData) => {
       try {
-        await createPost({ formData })
+        await createPost({ url: `/posts`, method: 'post', data: formData })
       } catch (e) {
         console.log(e)
       }
@@ -41,7 +51,7 @@ function CreateArticleContainer({ id }) {
   const onSubmitUpdate = useCallback(
     async (formData) => {
       try {
-        await updatePost({ id, formData })
+        await updatePost({ url: `/posts/${id}`, method: 'put', data: formData })
       } catch (e) {
         console.log(e)
       }

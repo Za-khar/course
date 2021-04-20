@@ -1,6 +1,5 @@
 import { Link, useRouteMatch } from 'react-router-dom'
 
-import Avatar from '@material-ui/core/Avatar'
 import Box from '@material-ui/core/Box'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
@@ -15,22 +14,36 @@ import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import React from 'react'
+import React, { useCallback } from 'react'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
 import config from '../../Config.json'
 import { objectPost } from './PropTypes/postType'
 import useStyles from './ArticleStyles'
+import useAuth from '../../hooks/useAuth'
+import CustomAvatar from '../CustomComponents/CustomAvatar'
+import PropTypes from 'prop-types'
 
-function Article({ postData }) {
+function Article({ postData, deletePost }) {
+  const { user } = useAuth()
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [expanded, setExpanded] = React.useState(false)
 
   const match = useRouteMatch()
   const classes = useStyles()
 
-  const { post_id, content, title, creation_date, filesData } = postData
+  const {
+    post_id,
+    content,
+    title,
+    creation_date,
+    filesData,
+    user_id,
+    first_name,
+    last_name,
+    path,
+  } = postData
   const date = new Date(creation_date)
   const open = Boolean(anchorEl)
 
@@ -46,60 +59,72 @@ function Article({ postData }) {
     setAnchorEl(null)
   }
 
+  const onSubmitDelete = useCallback(async () => {
+    try {
+      await deletePost({ url: `/posts/${post_id}`, method: 'delete' })
+    } catch (e) {
+      console.log(e)
+    }
+  }, [deletePost, post_id])
+
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            R
-          </Avatar>
+          <CustomAvatar
+            className={classes.avatar}
+            name={first_name}
+            path={path}
+          />
         }
         action={
-          <>
-            <IconButton
-              aria-label="more"
-              aria-controls="edit_menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              id="edit_menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={open}
-              onClose={handleClose}
-              elevation={0}
-              getContentAnchorEl={null}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-              PaperProps={{
-                style: {
-                  border: '1px solid #d3d4d5',
-                  boxShadow: ' 0 0 10px rgba(0,0,0,0.2)',
-                  width: '10ch',
-                  maxHeight: 100,
-                },
-              }}
-            >
-              <MenuItem
-                component={Link}
-                to={`${match.url}/edit-article/${post_id}`}
+          user.user_id === user_id && (
+            <>
+              <IconButton
+                aria-label="more"
+                aria-controls="edit_menu"
+                aria-haspopup="true"
+                onClick={handleClick}
               >
-                Edit
-              </MenuItem>
-              <MenuItem>Delete</MenuItem>
-            </Menu>
-          </>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="edit_menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={open}
+                onClose={handleClose}
+                elevation={0}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                PaperProps={{
+                  style: {
+                    border: '1px solid #d3d4d5',
+                    boxShadow: ' 0 0 10px rgba(0,0,0,0.2)',
+                    width: '10ch',
+                    maxHeight: 100,
+                  },
+                }}
+              >
+                <MenuItem
+                  component={Link}
+                  to={`${match.url}/edit-article/${post_id}`}
+                >
+                  Edit
+                </MenuItem>
+                <MenuItem onClick={onSubmitDelete}>Delete</MenuItem>
+              </Menu>
+            </>
+          )
         }
-        title="UserName"
+        title={`${first_name} ${last_name}`}
         subheader={date.toDateString() + ' ' + date.toLocaleTimeString()}
       />
       {filesData.map((file, index) => (
@@ -163,6 +188,7 @@ function Article({ postData }) {
 
 Article.propTypes = {
   postData: objectPost,
+  onSubmitDelete: PropTypes.func,
 }
 
 export default Article

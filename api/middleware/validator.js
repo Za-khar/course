@@ -11,24 +11,28 @@ module.exports = function validator(validatorSchema) {
           case 'required':
             if (!req.body[fieldName]) {
               errors.push({
-                [fieldName]: `Field ${fieldName} is required!`,
+                message: `Field ${fieldName} is required!`,
               })
             }
             break
           case 'min':
-            const min = parseInt(params[0], 10)
-            if (req.body[fieldName].length < min) {
-              errors.push({
-                [fieldName]: `${fieldName} is too short, min: ${min}`,
-              })
+            if (req.body[fieldName]) {
+              const min = parseInt(params[0], 10)
+              if (req.body[fieldName].length < min) {
+                errors.push({
+                  message: `${fieldName} is too short, min: ${min}`,
+                })
+              }
             }
             break
           case 'max':
-            const max = parseInt(params[0], 10)
-            if (req.body[fieldName].length > max) {
-              errors.push({
-                [fieldName]: `${fieldName} is too long, max: ${max}`,
-              })
+            if (req.body[fieldName]) {
+              const max = parseInt(params[0], 10)
+              if (req.body[fieldName].length > max) {
+                errors.push({
+                  message: `${fieldName} is too long, max: ${max}`,
+                })
+              }
             }
             break
           case 'email':
@@ -38,7 +42,7 @@ module.exports = function validator(validatorSchema) {
               )
             ) {
               errors.push({
-                [fieldName]: `${fieldName} is not email`,
+                message: `${fieldName} is not email`,
               })
             }
             break
@@ -53,11 +57,11 @@ module.exports = function validator(validatorSchema) {
                 if (
                   !(
                     params.includes('update') &&
-                    req.params.id === field[params[3]]
+                    req.user.user_id === field[params[3]]
                   )
                 ) {
                   errors.push({
-                    [fieldName]: `Field ${fieldName} is already exist`,
+                    message: `${fieldName} is already exist`,
                   })
                 }
               }
@@ -67,7 +71,7 @@ module.exports = function validator(validatorSchema) {
             if (req.body[fieldName]) {
               if (!params.includes(req.body[fieldName])) {
                 errors.push({
-                  [fieldName]: `Field ${fieldName} must be one of the values: ${params.join(
+                  message: `Field ${fieldName} must be one of the values: ${params.join(
                     ', '
                   )}`,
                 })
@@ -83,6 +87,6 @@ module.exports = function validator(validatorSchema) {
       return next()
     }
 
-    return res.status(422).send(errors)
+    return res.status(422).send(errors[0])
   }
 }

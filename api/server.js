@@ -7,6 +7,7 @@ const postsRoutes = require('./routes/postsRoutes')
 const authRoutes = require('./routes/authRoutes')
 const fileRoutes = require('./routes/fileRoutes')
 const userRoutes = require('./routes/userRoutes')
+const socialRoutes = require('./routes/socialRoutes')
 
 const authMiddleware = require('./middleware//auth.middleware')
 
@@ -27,6 +28,7 @@ app.use(express.json())
 app.use(authMiddleware)
 
 app.use('/auth', authRoutes)
+app.use('/social', socialRoutes)
 app.use('/users', userRoutes)
 app.use('/posts', postsRoutes)
 app.use('/files', fileRoutes)

@@ -3,6 +3,7 @@ import './index.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 import App from './App'
+import AuthStore from './authStore'
 import { BrowserRouter } from 'react-router-dom'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -12,11 +13,13 @@ const queryClient = new QueryClient()
 
 ReactDOM.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <AuthStore>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </AuthStore>
   </React.StrictMode>,
   document.getElementById('root')
 )

@@ -11,13 +11,20 @@ function PostsList({
   showMore,
   hasNextPage,
   isFetchingNextPage,
+  deletePost,
 }) {
   return (
     <div className="articles-block">
       {isFetching && 'Loading...'}
       {!isFetching &&
         pagesData.map(({ data }) =>
-          data.map((post) => <Article key={post.post_id} postData={post} />)
+          data.map((post) => (
+            <Article
+              key={post.post_id}
+              postData={post}
+              deletePost={deletePost}
+            />
+          ))
         )}
       <div>
         <button

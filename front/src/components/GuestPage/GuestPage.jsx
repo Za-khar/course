@@ -1,24 +1,37 @@
-import { Redirect, Route } from 'react-router-dom'
-
+import AuthForm from './components/AuthForm/AuthForm'
 import GuestHeader from '../GuestHeader/GuestHeader'
-import LoginForm from './components/LoginForm/LoginForm'
 import React from 'react'
+import { Route } from 'react-router-dom'
 
 function GuestPage() {
-  const [validate, setValidate] = React.useState(false)
   return (
     <>
       <GuestHeader />
       <Route
         path="/login"
         exact
-        render={() =>
-          validate ? (
-            <Redirect to="/home" />
-          ) : (
-            <LoginForm setValidate={setValidate} />
-          )
-        }
+        sensitive
+        strict
+        render={() => (
+          <AuthForm
+            authUrl={'/auth/login'}
+            socAuthUrl={'/auth/social-login'}
+            isLogin={true}
+          />
+        )}
+      />
+      <Route
+        path="/reg"
+        exact
+        sensitive
+        strict
+        render={() => (
+          <AuthForm
+            authUrl={'/auth/registration'}
+            socAuthUrl={'/auth/social-reg'}
+            isLogin={false}
+          />
+        )}
       />
     </>
   )

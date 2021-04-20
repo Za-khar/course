@@ -1,149 +1,136 @@
 const config = require('../Config')
 const User = require('../models/User')
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const fs = require('fs').promises
+const {
+  tokenService,
+  userService,
+  authService,
+  nodemailerService,
+  socialService,
+} = require('../services')
 
 class AuthController {
+  async socialRegistration(req, res) {
+    try {
+      const userData = await socialService.createUserBySocialAccount(req.body)
+      const authTokens = await tokenService.generateAuthTokens(userData)
+
+      const { password, ...user } = userData
+
+      return res.send({
+        user,
+        authTokens,
+      })
+    } catch (e) {
+      console.log(e)
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
+      }
+      res.status(500).send({ message: 'Social registration error!' })
+    }
+  }
+
   async socialLogin(req, res) {
     try {
-      const { email, user_id, provider } = req.data
-      // For logged users
-      if (req.user) {
-        const socAcc = await User.getSocialAccountByID({ user_id, provider })
-        const ownAcc = await User.getSocialAccountByUserID({
-          id: req.user.user_id,
-          provider,
-        })
-
-        if (socAcc) {
-          return res
-            .status(401)
-            .send({ message: `This account is already linked` })
-        }
-
-        if (ownAcc) {
-          return res
-            .status(401)
-            .send({
-              message: `You are already linked with ${provider} account`,
-            })
-        }
-
-        await User.saveSocialAccout({
-          accountID: user_id,
-          socialAccoutEmail: email,
-          userID: req.user.user_id,
-          provider,
-        })
-        return res.send({ message: `Account linked successful` })
+      const userData = await authService.loginWithSocialAccount(req.body.id)
+      const authTokens = await tokenService.generateAuthTokens(userData)
+      const { password, ...user } = userData
+      return res.send({
+        user,
+        authTokens,
+      })
+    } catch (e) {
+      console.log(e)
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
       }
 
-      const user = await User.getUserBySocialAccountID(user_id)
+      return res.status(500).send({ message: 'Login error!' })
+    }
+  }
 
-      if (user) {
-        // Log in with social account
-
-        const token = jwt.sign(
-          { user_id: user.user_id },
-          config.get('SECRET_KEY'),
-          { expiresIn: '24h' }
-        )
-
-        return res.json({
-          token,
-          user: {
-            user_id: user.user_id,
-            email: user.email,
-          },
-        })
-      } else {
-        const user = await User.findByLogin(email)
-        const socAcc = await User.getSocialAccountByID({ user_id, provider })
-
-        // find and link account by email
-        if (user && !socAcc) {
-          const ownAcc = await User.getSocialAccountByUserID({
-            id: user.user_id,
-            provider,
-          })
-          if (!ownAcc) {
-            await User.saveSocialAccout({
-              accountID: user_id,
-              socialAccoutEmail: email,
-              userID: user.user_id,
-              provider,
-            })
-
-            const token = jwt.sign(
-              { user_id: user.user_id },
-              config.get('SECRET_KEY'),
-              { expiresIn: '1h' }
-            )
-
-            return res.json({
-              token,
-              user: {
-                user_id: user.user_id,
-                email: user.email,
-              },
-            })
-          }
-
-          return res
-            .status(401)
-            .send({
-              message: `Impossible to link account because user with this email is already associated with ${provider} social account`,
-            })
-        }
-
-        // registration new user
-        if (!socAcc && !user) {
-          const userRole = 'user'
-          const hashPassword = await bcrypt.hash(user_id, 4)
-
-          const newUser = (
-            await User.saveUser({ email, hashPassword, userRole })
-          )[0]
-          await User.saveUserSettings({ user_id: newUser.user_id })
-          await User.activate(newUser.user_id)
-
-          await fs.mkdir(
-            `${config.get('FILE_PATH')}\\files\\${newUser.user_id}`
-          )
-
-          const token = jwt.sign(
-            { user_id: newUser.user_id },
-            config.get('SECRET_KEY'),
-            { expiresIn: '1h' }
-          )
-
-          await User.saveSocialAccout({
-            accountID: user_id,
-            socialAccoutEmail: email,
-            userID: newUser.user_id,
-            provider,
-          })
-
-          return res.json({
-            token,
-            newUser: {
-              user_id: newUser.user_id,
-              email: newUser.email,
-            },
-          })
-        }
-
-        return res
-          .status(401)
-          .send({
-            message:
-              'Impossible to create account because email already linked',
-          })
+  async logout(req, res) {
+    try {
+      await authService.logoutUser(req.body.refreshToken)
+      res.send()
+    } catch (e) {
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
       }
-    } catch (err) {
-      console.log(err)
-      return res.status(500).send({ message: 'Server error' })
+      res.status(500).send({ message: 'Logout error' })
+    }
+  }
+
+  async refreshLogin(req, res) {
+    try {
+      const result = await authService.refreshAuth(req.body)
+      res.send(result)
+    } catch (e) {
+      console.log(e)
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
+      }
+      return res.status(500).send({ message: 'Refresh auth error' })
+    }
+  }
+
+  async simpleLogin(req, res) {
+    try {
+      const userData = await authService.loginWithEmailAndPassword(req.body)
+      const authTokens = await tokenService.generateAuthTokens(userData)
+      const { password, ...user } = userData
+      return res.send({
+        user,
+        authTokens,
+      })
+    } catch (e) {
+      console.log(e)
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
+      }
+
+      return res.status(500).send({ message: 'Login error!' })
+    }
+  }
+
+  async simpleRegistaration(req, res) {
+    try {
+      const userData = await userService.createUser(req.body)
+      const authTokens = await tokenService.generateAuthTokens(userData)
+
+      await nodemailerService.sendActivationMessage(userData)
+
+      const { password, ...user } = userData
+
+      return res.send({
+        user,
+        authTokens,
+        message: 'You are registered! Verify your email!',
+      })
+    } catch (e) {
+      console.log(e)
+      res.status(500).send({ message: 'Registration error!' })
+    }
+  }
+
+  async userActivation(req, res) {
+    try {
+      const { sub } = jwt.verify(req.params.token, config.get('MAIL_SECRET'))
+
+      const { active } = await User.checkActive(sub)
+
+      if (active) {
+        return res.status(400).send({ message: 'User is activated' })
+      }
+
+      await User.activate(sub)
+
+      return res.redirect(
+        `http://${config.get('FRONT_HOST')}:${config.get('FRONT_PORT')}/login`
+      )
+    } catch (e) {
+      console.log(e)
+      res.status(500).send('Activation error!')
     }
   }
 }
