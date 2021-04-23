@@ -70,6 +70,38 @@ function checkAccess(params) {
   }
 }
 
+async function checkAccessWS(params, user, current_id) {
+  try {
+    const userPermissions = user.permissions
+
+    for (element of params) {
+      if (userPermissions.includes(element.permission)) {
+        if (element.own) {
+          const { table, column, columnIDName } = element.own
+
+          const creator = await db
+            .select(column)
+            .from(table)
+            .where(columnIDName, current_id)
+            .first()
+
+          if (creator && user && user.user_id == creator[column]) {
+            return true
+          } else {
+            return false
+          }
+        } else {
+          return true
+        }
+      }
+    }
+    return false
+  } catch (e) {
+    console.log(e)
+    return false
+  }
+}
+
 async function checkSocialAccount(req, res, next) {
   const {
     _token: { accessToken },
@@ -126,4 +158,5 @@ module.exports = {
   checkSocialAccount,
   chackActivation,
   checkRegistrationByLogin,
+  checkAccessWS,
 }

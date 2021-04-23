@@ -1,6 +1,6 @@
 import './PostsList.css'
 
-import Article from '../../Article/Article'
+import ArticleContainer from '../../../containers/Posts/ArticleContainer'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { objectPost } from '../../Article/PropTypes/postType'
@@ -19,7 +19,7 @@ function PostsList({
       {!isFetching &&
         pagesData.map(({ data }) =>
           data.map((post) => (
-            <Article
+            <ArticleContainer
               key={post.post_id}
               postData={post}
               deletePost={deletePost}
@@ -54,6 +54,7 @@ PostsList.propTypes = {
   showMore: PropTypes.func.isRequired,
   hasNextPage: PropTypes.bool,
   isFetchingNextPage: PropTypes.bool.isRequired,
+  deletePost: PropTypes.func.isRequired,
 }
 
 export default PostsList

@@ -5,6 +5,7 @@ class Post {
   static friendTableName = 'Friend_relationship'
   static userTableName = 'Users'
   static avatarTableName = 'Avatars'
+  static commentTableName = 'Post_comments'
 
   async getPostsData(limit, offset, user_id) {
     const friendsPosts = db
@@ -22,6 +23,7 @@ class Post {
 
     return db
       .select(`${Post.postTableName}.*`, 'first_name', 'last_name', 'path')
+      .count('comment_id as comments_number')
       .from(Post.postTableName)
       .leftJoin(
         Post.userTableName,
@@ -35,9 +37,21 @@ class Post {
         '=',
         `${Post.avatarTableName}.user_id`
       )
+      .leftJoin(Post.commentTableName, function () {
+        this.on(
+          `${Post.commentTableName}.post_id`,
+          '=',
+          `${Post.postTableName}.post_id`
+        ).onNull('parent_comment_id')
+      })
       .where(`${Post.postTableName}.user_id`, user_id)
       .orWhere(`${Post.postTableName}.access`, 'all')
       .orWhereIn(`${Post.postTableName}.post_id`, friendsPosts)
+      .groupBy(
+        `${Post.postTableName}.post_id`,
+        `${Post.userTableName}.user_id`,
+        `${Post.avatarTableName}.path`
+      )
       .orderBy(`${Post.postTableName}.creation_date`, 'desc')
       .limit(limit)
       .offset(offset)

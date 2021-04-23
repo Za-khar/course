@@ -1,6 +1,12 @@
+import * as Yup from 'yup'
+
+import { Form, Formik } from 'formik'
 import { Link, useRouteMatch } from 'react-router-dom'
+import React, { useCallback, useState } from 'react'
+import { objectComment, objectLike, objectPost } from './PropTypes/postType'
 
 import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
@@ -9,27 +15,40 @@ import CardMedia from '@material-ui/core/CardMedia'
 import ChatIcon from '@material-ui/icons/Chat'
 import Collapse from '@material-ui/core/Collapse'
 import Comment from './components/Comment'
+import CustomAvatar from '../CustomComponents/CustomAvatar'
+import CustomPopover from '../CustomComponents/CustomPopover'
+import CustomTextField from '../CustomComponents/CustomTextField'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import React, { useCallback } from 'react'
-import TextField from '@material-ui/core/TextField'
+import PropTypes from 'prop-types'
 import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
 import config from '../../Config.json'
-import { objectPost } from './PropTypes/postType'
-import useStyles from './ArticleStyles'
 import useAuth from '../../hooks/useAuth'
-import CustomAvatar from '../CustomComponents/CustomAvatar'
-import PropTypes from 'prop-types'
+import useStyles from './ArticleStyles'
 
-function Article({ postData, deletePost }) {
+function Article({
+  postData,
+  setEditCommentData,
+  onSubmitDelete,
+  expanded,
+  editCommentData,
+  handleExpandClick,
+  comments,
+  handleSubmit,
+  deleteComment,
+  likes,
+  handleLike,
+  setParentCommentData,
+  parentCommentData,
+}) {
   const { user } = useAuth()
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const [expanded, setExpanded] = React.useState(false)
 
+  const [anchorEl, setAnchorEl] = useState(null)
+  const [popover, setPopover] = useState(null)
   const match = useRouteMatch()
   const classes = useStyles()
 
@@ -43,13 +62,27 @@ function Article({ postData, deletePost }) {
     first_name,
     last_name,
     path,
+    comments_number,
   } = postData
+
   const date = new Date(creation_date)
   const open = Boolean(anchorEl)
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded)
-  }
+  const editComment = useCallback(
+    async (data) => {
+      setParentCommentData(null)
+      setEditCommentData(data)
+    },
+    [setEditCommentData, setParentCommentData]
+  )
+
+  const replyComment = useCallback(
+    async (data) => {
+      setEditCommentData(null)
+      setParentCommentData(data)
+    },
+    [setParentCommentData, setEditCommentData]
+  )
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -59,13 +92,28 @@ function Article({ postData, deletePost }) {
     setAnchorEl(null)
   }
 
-  const onSubmitDelete = useCallback(async () => {
-    try {
-      await deletePost({ url: `/posts/${post_id}`, method: 'delete' })
-    } catch (e) {
-      console.log(e)
-    }
-  }, [deletePost, post_id])
+  const handleCancel = (resetForm) => {
+    setParentCommentData(null)
+    setEditCommentData(null)
+    resetForm()
+  }
+
+  const handlePopoverOpen = (event) => {
+    setPopover(event.currentTarget)
+  }
+
+  const handlePopoverClose = () => {
+    setPopover(null)
+  }
+
+  const openPopover = Boolean(popover)
+
+  const commentSchema = Yup.object().shape({
+    comment_text: Yup.string()
+      .min(1, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Impossible to send an empty message'),
+  })
 
   return (
     <Card className={classes.root}>
@@ -146,17 +194,37 @@ function Article({ postData, deletePost }) {
         </Typography>
       </CardContent>
       <CardActions disableSpacing className={classes.card_menu}>
-        <Box ml={1}>
+        <Box
+          ml={1}
+          aria-owns={openPopover ? 'mouse-over-popover' : undefined}
+          aria-haspopup="true"
+          onMouseEnter={handlePopoverOpen}
+          onMouseLeave={handlePopoverClose}
+        >
           <Typography color="textSecondary" variant="body2" component="span">
-            {70000008}
+            {likes.length}
           </Typography>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+          <IconButton aria-label="add to favorites" onClick={handleLike}>
+            {likes.find(({ user_id }) => user_id === user.user_id) ? (
+              <FavoriteIcon style={{ color: 'red' }} />
+            ) : (
+              <FavoriteIcon />
+            )}
           </IconButton>
         </Box>
+        {Boolean(likes.length) && (
+          <CustomPopover
+            open={openPopover}
+            handlePopoverClose={handlePopoverClose}
+            anchorEl={popover}
+            likes={likes}
+          />
+        )}
         <Box>
           <Typography color="textSecondary" variant="body2" component="span">
-            Show comments {67345435}
+            Show comments{' '}
+            {comments.filter((data) => !data.parent_comment_id).length ||
+              comments_number}
           </Typography>
           <IconButton
             className={clsx(classes.expand, {
@@ -172,14 +240,70 @@ function Article({ postData, deletePost }) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Comment></Comment>
-          <Comment></Comment>
-          <Comment></Comment>
-          <Comment></Comment>
-          <Comment></Comment>
+          {comments
+            .filter((comData) => !comData.parent_comment_id)
+            .map((data) => (
+              <Comment
+                key={data.comment_id}
+                data={data}
+                deleteComment={deleteComment}
+                editComment={editComment}
+                replyComment={replyComment}
+                replies={comments.filter(
+                  (reply) => reply.parent_comment_id === data.comment_id
+                )}
+              />
+            ))}
         </CardContent>
         <CardContent>
-          <TextField multiline />
+          <Formik
+            enableReinitialize
+            initialValues={{
+              comment_text: editCommentData?.comment_text || '',
+            }}
+            validationSchema={commentSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, touched, values, handleChange, resetForm }) => (
+              <Form>
+                <CustomTextField
+                  id="comment_text"
+                  onChange={handleChange}
+                  name="comment_text"
+                  value={values.comment_text}
+                  label={
+                    editCommentData
+                      ? `Edit comment: ${editCommentData.comment_text}`
+                      : parentCommentData
+                      ? `Reply to comment: ${parentCommentData.comment_text}`
+                      : 'Add comment...'
+                  }
+                  helperText={
+                    errors.comment_text &&
+                    touched.comment_text &&
+                    errors.comment_text
+                  }
+                  error={touched.comment_text && Boolean(errors.comment_text)}
+                />
+                <Button type="submit" variant="contained" color="primary">
+                  {editCommentData
+                    ? 'Edit'
+                    : parentCommentData
+                    ? 'Reply'
+                    : 'Send'}
+                </Button>
+                {(editCommentData || parentCommentData) && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleCancel.bind(null, resetForm)}
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </Form>
+            )}
+          </Formik>
         </CardContent>
       </Collapse>
     </Card>
@@ -188,7 +312,18 @@ function Article({ postData, deletePost }) {
 
 Article.propTypes = {
   postData: objectPost,
-  onSubmitDelete: PropTypes.func,
+  setEditCommentData: PropTypes.func.isRequired,
+  onSubmitDelete: PropTypes.func.isRequired,
+  handleExpandClick: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  deleteComment: PropTypes.func.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  setParentCommentData: PropTypes.func.isRequired,
+  parentCommentData: objectComment,
+  likes: PropTypes.arrayOf(objectLike),
+  comments: PropTypes.arrayOf(objectComment),
+  expanded: PropTypes.bool.isRequired,
+  editCommentData: objectComment,
 }
 
 export default Article

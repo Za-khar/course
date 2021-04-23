@@ -23,7 +23,8 @@
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "nodemailer": "^6.4.17",
-    "pg": "^8.5.1"
+    "pg": "^8.5.1",
+    "ws": "^7.4.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"

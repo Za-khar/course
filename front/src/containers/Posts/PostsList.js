@@ -1,6 +1,7 @@
+import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query'
+
 import PostsList from '../../components/UserContainers/PostsList/PostsList'
 import React from 'react'
-import { useInfiniteQuery, useQueryClient, useMutation } from 'react-query'
 import useApi from '../../hooks/useApi'
 
 function PostsListContainer() {
