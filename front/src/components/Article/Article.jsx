@@ -84,27 +84,36 @@ function Article({
     [setParentCommentData, setEditCommentData]
   )
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+  const handleClick = useCallback(
+    (event) => {
+      setAnchorEl(event.currentTarget)
+    },
+    [setAnchorEl]
+  )
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null)
-  }
+  }, [setAnchorEl])
 
-  const handleCancel = (resetForm) => {
-    setParentCommentData(null)
-    setEditCommentData(null)
-    resetForm()
-  }
+  const handleCancel = useCallback(
+    (resetForm) => {
+      setParentCommentData(null)
+      setEditCommentData(null)
+      resetForm()
+    },
+    [setParentCommentData, setEditCommentData]
+  )
 
-  const handlePopoverOpen = (event) => {
-    setPopover(event.currentTarget)
-  }
+  const handlePopoverOpen = useCallback(
+    (event) => {
+      setPopover(event.currentTarget)
+    },
+    [setPopover]
+  )
 
-  const handlePopoverClose = () => {
+  const handlePopoverClose = useCallback(() => {
     setPopover(null)
-  }
+  }, [setPopover])
 
   const openPopover = Boolean(popover)
 

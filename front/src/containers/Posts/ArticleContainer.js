@@ -15,7 +15,6 @@ function ArticleContainer({ postData, deletePost }) {
   const [comments, setComments] = useState([])
   const [ws, setWS] = useState(null)
   const [likeWS, setLikeWS] = useState(null)
-  const [refresh, setRefresh] = useState(true)
   const { callApi } = useApi()
 
   const { post_id } = postData
@@ -50,11 +49,14 @@ function ArticleContainer({ postData, deletePost }) {
     }
     setLikeWS(socket)
 
-    socket.onclose = () => {
-      setLikeWS(null)
-      setRefresh((ref) => !ref)
+    return () => {
+      socket.close()
     }
-  }, [refresh, post_id])
+  }, [post_id])
+
+  useEffect(() => {
+    return () => ws && ws.close()
+  }, [ws])
 
   const handleLike = useCallback(
     async (e) => {
@@ -191,11 +193,7 @@ function ArticleContainer({ postData, deletePost }) {
   )
 
   const onSubmitDelete = useCallback(async () => {
-    try {
-      await deletePost({ url: `/posts/${post_id}`, method: 'delete' })
-    } catch (e) {
-      console.log(e)
-    }
+    await deletePost({ url: `/posts/${post_id}`, method: 'delete' })
   }, [deletePost, post_id])
 
   return (

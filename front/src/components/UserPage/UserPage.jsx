@@ -9,7 +9,6 @@ import PropTypes from 'prop-types'
 
 function UserPage({ onSubmitUpdate, uploadAvatar }) {
   const match = useRouteMatch()
-
   return (
     <div>
       <Header />
