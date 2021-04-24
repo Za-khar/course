@@ -257,26 +257,6 @@ function MyProfile({ onSubmitUpdate, uploadAvatar }) {
           </Form>
         )}
       </Formik>
-      <Box>
-        <span>Link account with facebook account</span>
-        <SocialButton
-          provider="facebook"
-          appId={config.FACEBOOK_CLIENT_ID}
-          onLoginSuccess={handleSocialLogin}
-          onLoginFailure={handleSocialLoginFailure}
-        >
-          Facebook
-        </SocialButton>
-        <span>Link account with google account</span>
-        <SocialButton
-          provider="google"
-          appId={config.GOOGLE_CLIENT_ID}
-          onLoginSuccess={handleSocialLogin}
-          onLoginFailure={handleSocialLoginFailure}
-        >
-          Google
-        </SocialButton>
-      </Box>
     </Card>
   )
 }

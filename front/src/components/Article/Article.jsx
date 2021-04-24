@@ -44,6 +44,7 @@ function Article({
   handleLike,
   setParentCommentData,
   parentCommentData,
+  commentsNumber,
 }) {
   const { user } = useAuth()
 
@@ -231,9 +232,7 @@ function Article({
         )}
         <Box>
           <Typography color="textSecondary" variant="body2" component="span">
-            Show comments{' '}
-            {comments.filter((data) => !data.parent_comment_id).length ||
-              comments_number}
+            Show comments {commentsNumber || comments_number.toString()}
           </Typography>
           <IconButton
             className={clsx(classes.expand, {
@@ -333,6 +332,7 @@ Article.propTypes = {
   comments: PropTypes.arrayOf(objectComment),
   expanded: PropTypes.bool.isRequired,
   editCommentData: objectComment,
+  commentsNumber: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default Article

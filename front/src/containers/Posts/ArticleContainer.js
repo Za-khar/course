@@ -16,8 +16,8 @@ function ArticleContainer({ postData, deletePost }) {
   const [ws, setWS] = useState(null)
   const [likeWS, setLikeWS] = useState(null)
   const { callApi } = useApi()
-
   const { post_id } = postData
+  const [commentsNumber, setCommentsNumber] = useState(0)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
@@ -58,6 +58,14 @@ function ArticleContainer({ postData, deletePost }) {
     return () => ws && ws.close()
   }, [ws])
 
+  useEffect(() => {
+    if (ws) {
+      setCommentsNumber(
+        comments.filter((data) => !data.parent_comment_id).length.toString()
+      )
+    }
+  }, [comments])
+
   const handleLike = useCallback(
     async (e) => {
       e.preventDefault()
@@ -77,7 +85,6 @@ function ArticleContainer({ postData, deletePost }) {
     if (!expanded) {
       const res = await callApi({ url: `/comments/${post_id}` })
       setComments(res.data)
-
       const websocket = new WebSocket(`ws://localhost:3000/comments/${post_id}`)
 
       websocket.onmessage = function (event) {
@@ -116,8 +123,10 @@ function ArticleContainer({ postData, deletePost }) {
       setWS(websocket)
 
       websocket.onclose = () => {
-        setExpanded(false)
-        setWS(null)
+        if (expanded) {
+          setExpanded(false)
+          setWS(null)
+        }
       }
 
       setExpanded(!expanded)
@@ -212,6 +221,7 @@ function ArticleContainer({ postData, deletePost }) {
       handleLike={handleLike}
       setParentCommentData={setParentCommentData}
       parentCommentData={parentCommentData}
+      commentsNumber={commentsNumber}
     />
   )
 }
