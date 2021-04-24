@@ -24,7 +24,7 @@ class UserController {
         },
         user_id: req.user.user_id,
       })
-      const { password, user_id, ...user } = userData
+      const { password, ...user } = userData
       res.send(user)
     } catch (e) {
       console.log(e)

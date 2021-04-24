@@ -3,10 +3,10 @@ import * as Yup from 'yup'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 
-import Avatar from '@material-ui/core/Avatar'
 import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Card from '@material-ui/core/Card'
+import CustomAvatar from '../../CustomComponents/CustomAvatar'
 import CustomRadioField from '../../CustomComponents/CustomRadioField'
 import CustomTextField from '../../CustomComponents/CustomTextField'
 import InputLabel from '@material-ui/core/FormLabel'
@@ -18,9 +18,6 @@ import config from '../../../Config.json'
 import useAuth from '../../../hooks/useAuth'
 import { useQueryClient } from 'react-query'
 import useStyles from './MyProfileStyles'
-import userDataType from '../../UserPage/PropTypes/userDataType'
-import CustomAvatar from '../../CustomComponents/CustomAvatar'
-import { matchPath } from 'react-router'
 
 function MyProfile({ onSubmitUpdate, uploadAvatar }) {
   const queryClient = useQueryClient()
@@ -260,26 +257,6 @@ function MyProfile({ onSubmitUpdate, uploadAvatar }) {
           </Form>
         )}
       </Formik>
-      <Box>
-        <span>Link account with facebook account</span>
-        <SocialButton
-          provider="facebook"
-          appId={config.FACEBOOK_CLIENT_ID}
-          onLoginSuccess={handleSocialLogin}
-          onLoginFailure={handleSocialLoginFailure}
-        >
-          Facebook
-        </SocialButton>
-        <span>Link account with google account</span>
-        <SocialButton
-          provider="google"
-          appId={config.GOOGLE_CLIENT_ID}
-          onLoginSuccess={handleSocialLogin}
-          onLoginFailure={handleSocialLoginFailure}
-        >
-          Google
-        </SocialButton>
-      </Box>
     </Card>
   )
 }

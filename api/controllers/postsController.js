@@ -1,13 +1,6 @@
-const db = require('../services/db')
-const config = require('../Config')
-const User = require('../models/User')
-const fs = require('fs').promises
 const postService = require('../services/post.service')
 
 class PostsController {
-  static tableName = 'Posts'
-  static fileTableName = 'Images'
-
   async createPost(req, res) {
     try {
       const { title, content, access } = req.body
