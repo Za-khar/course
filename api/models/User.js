@@ -4,6 +4,7 @@ class User {
   static userTableName = 'Users'
   static socialTableName = 'Social_accounts'
   static userSettingsTableName = 'User_settings'
+  static avatarTableName = 'Avatars'
 
   static async findByLogin(email) {
     return db(User.userTableName)
@@ -164,6 +165,13 @@ class User {
         provider: provider,
       })
       .returning('*')
+  }
+
+  static async getAvatar(user_id) {
+    return db(User.avatarTableName)
+      .select('path')
+      .where('user_id', user_id)
+      .first()
   }
 
   static async getSocialAccountByID({ id, provider }) {

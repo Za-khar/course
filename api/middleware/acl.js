@@ -1,5 +1,6 @@
 const db = require('../services/db')
 const config = require('../Config')
+const Friend = require('../models/Friend')
 const User = require('../models/User')
 const axios = require('axios')
 
@@ -9,6 +10,23 @@ function checkAuthorized(req, res, next) {
   } else {
     return res.status(401).send({ message: 'Access denied' })
   }
+}
+
+async function checkFriend(req, res, next) {
+  let checkFriend
+  if (req.body.user_id) {
+    checkFriend = await Friend.checkUser(req.body.user_id)
+  }
+
+  if (req.params.id) {
+    checkFriend = await Friend.checkUser(req.params.id)
+  }
+
+  if (!checkFriend) {
+    return res.status(401).send({ message: 'User does not exist!' })
+  }
+
+  return next()
 }
 
 async function checkRegistrationByLogin(req, res, next) {
@@ -28,7 +46,7 @@ async function checkRegistrationByLogin(req, res, next) {
   }
 }
 
-async function chackActivation(req, res, next) {
+async function checkActivation(req, res, next) {
   try {
     const user = await User.getUserById(req.user.user_id)
     if (!user.active) {
@@ -156,7 +174,8 @@ module.exports = {
   checkAuthorized,
   checkAccess,
   checkSocialAccount,
-  chackActivation,
+  checkFriend,
+  checkActivation,
   checkRegistrationByLogin,
   checkAccessWS,
 }

@@ -16,9 +16,11 @@ import Typography from '@material-ui/core/Typography'
 import clsx from 'clsx'
 import { objectComment } from '../PropTypes/postType'
 import useAuth from '../../../hooks/useAuth'
+import { useHistory } from 'react-router-dom'
 import useStyles from '../ArticleStyles'
 
 function Comment({ data, deleteComment, editComment, replies, replyComment }) {
+  const history = useHistory()
   const classes = useStyles()
   const [showReplies, setShowReplies] = useState(false)
   const { user } = useAuth()
@@ -42,6 +44,9 @@ function Comment({ data, deleteComment, editComment, replies, replyComment }) {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
+  const handleClickPostHeader = useCallback(() => {
+    history.push(`/home/profile/${user_id}`)
+  }, [history, user_id])
 
   const handleClose = () => {
     setAnchorEl(null)
@@ -82,6 +87,8 @@ function Comment({ data, deleteComment, editComment, replies, replyComment }) {
   return (
     <Box mb={2}>
       <CardHeader
+        onClick={handleClickPostHeader}
+        style={{ cursor: 'pointer' }}
         avatar={<CustomAvatar path={path} name={first_name} />}
         action={
           user_id === user.user_id && (

@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react'
-
 import GuestPage from '../components/GuestPage/GuestPage'
 
 function GuestPageContainer() {
-
   return <GuestPage />
 }
 
