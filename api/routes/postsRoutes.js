@@ -2,7 +2,7 @@ const express = require('express')
 const {
   checkAuthorized,
   checkAccess,
-  chackActivation,
+  checkActivation,
 } = require('../middleware/acl')
 const validator = require('../middleware/validator')
 const router = express.Router()
@@ -19,17 +19,17 @@ const tableName = 'Posts'
 const column = 'user_id'
 const columnIDName = 'post_id'
 
-router.get('/', [checkAuthorized, chackActivation], postsController.getPosts)
+router.get('/', [checkAuthorized, checkActivation], postsController.getPosts)
 router.get(
   '/:id',
-  [checkAuthorized, chackActivation],
+  [checkAuthorized, checkActivation],
   postsController.getOnePost
 )
 router.post(
   '/',
   [
     checkAuthorized,
-    chackActivation,
+    checkActivation,
     upload.array('files', 4),
     validator({
       title: ['required', 'min:1', 'max:30'],
@@ -43,7 +43,7 @@ router.put(
   '/:id',
   [
     checkAuthorized,
-    chackActivation,
+    checkActivation,
     upload.none(),
     checkAccess([
       { permission: 'updateAnyPost' },
@@ -64,7 +64,7 @@ router.delete(
   '/:id',
   [
     checkAuthorized,
-    chackActivation,
+    checkActivation,
     checkAccess([
       { permission: 'deleteAnyPost' },
       {

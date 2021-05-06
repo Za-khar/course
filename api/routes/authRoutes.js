@@ -1,14 +1,11 @@
-const express = require('express')
 const router = require('express').Router()
 
 const validator = require('../middleware/validator')
-const config = require('../Config')
 
 const authController = require('../controllers/authController')
 
 const {
   checkSocialAccount,
-  chackActivation,
   checkRegistrationByLogin,
 } = require('../middleware/acl')
 

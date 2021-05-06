@@ -1,15 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const commentsController = require('../controllers/commentsController')
-const {
-  checkAuthorized,
-  checkAccess,
-  chackActivation,
-} = require('../middleware/acl')
+const { checkAuthorized, checkActivation } = require('../middleware/acl')
 
 router.get(
   '/:id',
-  [checkAuthorized, chackActivation],
+  [checkAuthorized, checkActivation],
   commentsController.getComments
 )
 

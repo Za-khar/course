@@ -1,23 +1,23 @@
 const express = require('express')
 const router = express.Router()
 const fileController = require('../controllers/fileController')
-const { checkAuthorized, chackActivation } = require('../middleware/acl')
+const { checkAuthorized, checkActivation } = require('../middleware/acl')
 
 router.post(
   '/upload-avatar',
-  [checkAuthorized, chackActivation],
+  [checkAuthorized, checkActivation],
   fileController.uploadAvatar
 )
 
 router.get(
   '/avatar',
-  [checkAuthorized, chackActivation],
+  [checkAuthorized, checkActivation],
   fileController.getAvatar
 )
 
 router.delete(
   '/delete-avatar',
-  [checkAuthorized, chackActivation],
+  [checkAuthorized, checkActivation],
   fileController.deleteAvatar
 )
 

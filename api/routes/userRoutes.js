@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { checkAuthorized } = require('../middleware/acl')
+const { checkAuthorized, checkActivation } = require('../middleware/acl')
 const UserController = require('../controllers/userController')
 const validator = require('../middleware/validator')
 
@@ -19,6 +19,12 @@ router.put(
     }),
   ],
   UserController.updateOneUser
+)
+
+router.get(
+  '/:id',
+  [checkAuthorized, checkActivation],
+  UserController.getOneUser
 )
 
 module.exports = router

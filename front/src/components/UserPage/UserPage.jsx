@@ -3,9 +3,9 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import Container from '@material-ui/core/Container'
 import CreateArticleContainer from '../../containers/Posts/CreateArticleContainer'
 import Header from '../Header/Header'
-import MyProfileContainer from '../UserContainers/MyProfile/MyProfile'
 import PostsListContainer from '../../containers/Posts/PostsList'
 import PropTypes from 'prop-types'
+import UserProfileContainer from '../../containers/Users/UserProfileContainer'
 
 function UserPage({ onSubmitUpdate, uploadAvatar }) {
   const match = useRouteMatch()
@@ -34,12 +34,13 @@ function UserPage({ onSubmitUpdate, uploadAvatar }) {
             )}
           />
           <Route
-            path={`${match.url}/profile`}
+            path={`${match.url}/profile/:id(\\d+)?`}
             exact
             sensitive
             strict
-            render={() => (
-              <MyProfileContainer
+            render={(routerProps) => (
+              <UserProfileContainer
+                id={routerProps.match.params.id}
                 onSubmitUpdate={onSubmitUpdate}
                 uploadAvatar={uploadAvatar}
               />

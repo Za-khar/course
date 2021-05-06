@@ -5,8 +5,8 @@ const validator = require('../middleware/validator')
 const router = express.Router()
 const LikesController = require('../controllers/likesController')
 
-const { checkAuthorized, chackActivation } = require('../middleware/acl')
+const { checkAuthorized, checkActivation } = require('../middleware/acl')
 
-router.get('/:id', [checkAuthorized, chackActivation], LikesController.getLikes)
+router.get('/:id', [checkAuthorized, checkActivation], LikesController.getLikes)
 
 module.exports = router

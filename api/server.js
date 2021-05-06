@@ -10,7 +10,7 @@ const userRoutes = require('./routes/userRoutes')
 const socialRoutes = require('./routes/socialRoutes')
 const commentsRoutes = require('./routes/commentsRoutes')
 const likesRoutes = require('./routes/likesRoutes')
-const commentsController = require('./controllers/commentsController')
+const friendsRoutes = require('./routes/friendsRoutes')
 
 const { authMiddleware } = require('./middleware//auth.middleware')
 const WSMiddleware = require('./middleware/ws.middleware')
@@ -43,6 +43,7 @@ app.use('/posts', postsRoutes)
 app.use('/files', fileRoutes)
 app.use('/comments', commentsRoutes)
 app.use('/likes', likesRoutes)
+app.use('/friends', friendsRoutes)
 
 wss.on('connection', WSMiddleware)
 

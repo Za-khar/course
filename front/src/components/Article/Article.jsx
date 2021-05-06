@@ -1,7 +1,7 @@
 import * as Yup from 'yup'
 
 import { Form, Formik } from 'formik'
-import { Link, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import React, { useCallback, useState } from 'react'
 import { objectComment, objectLike, objectPost } from './PropTypes/postType'
 
@@ -47,6 +47,8 @@ function Article({
   commentsNumber,
 }) {
   const { user } = useAuth()
+
+  const history = useHistory()
 
   const [anchorEl, setAnchorEl] = useState(null)
   const [popover, setPopover] = useState(null)
@@ -105,6 +107,10 @@ function Article({
     [setParentCommentData, setEditCommentData]
   )
 
+  const handleClickPostHeader = useCallback(() => {
+    history.push(`/home/profile/${user_id}`)
+  }, [history, user_id])
+
   const handlePopoverOpen = useCallback(
     (event) => {
       setPopover(event.currentTarget)
@@ -128,6 +134,8 @@ function Article({
   return (
     <Card className={classes.root}>
       <CardHeader
+        onClick={handleClickPostHeader}
+        style={{ cursor: 'pointer' }}
         avatar={
           <CustomAvatar
             className={classes.avatar}
@@ -221,15 +229,15 @@ function Article({
               <FavoriteIcon />
             )}
           </IconButton>
+          {Boolean(likes.length) && (
+            <CustomPopover
+              open={openPopover}
+              handlePopoverClose={handlePopoverClose}
+              anchorEl={popover}
+              likes={likes}
+            />
+          )}
         </Box>
-        {Boolean(likes.length) && (
-          <CustomPopover
-            open={openPopover}
-            handlePopoverClose={handlePopoverClose}
-            anchorEl={popover}
-            likes={likes}
-          />
-        )}
         <Box>
           <Typography color="textSecondary" variant="body2" component="span">
             Show comments {commentsNumber || comments_number.toString()}

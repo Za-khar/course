@@ -1,6 +1,18 @@
 const { userService } = require('../services')
 
 class UserController {
+  async getOneUser(req, res) {
+    try {
+      const user = await userService.getOneUser(req.user.user_id, req.params.id)
+      res.send(user)
+    } catch (e) {
+      if (e.statusCode) {
+        return res.status(e.statusCode).send({ message: e.message })
+      }
+      res.status(500).send({ message: 'Get user error!' })
+    }
+  }
+
   async updateOneUser(req, res) {
     try {
       const {
@@ -27,7 +39,6 @@ class UserController {
       const { password, ...user } = userData
       res.send(user)
     } catch (e) {
-      console.log(e)
       res.status(500).send({ message: 'Update error!' })
     }
   }
